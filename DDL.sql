@@ -179,21 +179,29 @@ CREATE TABLE Categoria_Classificacao (
 );
 
 CREATE TABLE Camisola_Ciclista (
+	camisola varchar(64),
+	UCI_ID_ciclista int NOT NULL PRIMARY KEY,
 	FOREIGN KEY (UCI_ID_ciclista) REFERENCES Ciclista(UCI_ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
 CREATE TABLE Especificacao_Bicicleta (
+	especificacao varchar(64) NOT NULL,
+	Codigo_bicicleta int NOT NULL PRIMARY KEY,
 	FOREIGN KEY (Codigo_bicicleta) REFERENCES Bicicleta(Codigo)
 		ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
 CREATE TABLE Estado_ResultadoEtapa (
+	estado varchar(64),
+	tempo_resultadoetapa TIME NOT NULL PRIMARY KEY,
 	FOREIGN KEY (tempo_resultadoetapa) REFERENCES ResultadoEtapa(tempo)
 		ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
 CREATE TABLE Formato_Etapa (
+	formato varchar(64),
+	ID_Etapa int NOT NULL PRIMARY KEY,
 	FOREIGN KEY (ID_Etapa) REFERENCES Etapa(ID);
 		ON UPDATE CASCADE ON DELETE NO ACTION,
 );
