@@ -1,6 +1,6 @@
 INSERT INTO Competição (organizador, nome, datainicio, datafim, n_etapas)
 VALUES
-('Volta a Portugal', '86ª Volta a Portugal', '2025-08-01', '2025-08-10', 10);
+('Volta a Portugal', '86ª Volta a Portugal', '2025-08-06', '2025-08-17', 10);
 
 
 INSERT INTO Etapa (duracao, numetapa, distancia, velocidademedia)
@@ -204,8 +204,25 @@ VALUES
   ('Conn Mc Dunphy', 'Irlanda', NULL),
   ('Sean Christian', 'Estados Unidos', NULL),
   ('Cian Keogh', 'Irlanda', NULL),
-  ('Liam Flanagan', 'Irlanda', NULL)
-  ;
+  ('Liam Flanagan', 'Irlanda', NULL),
+
+  -- Diretor Desportivo
+  ('Ruben Pereira','Portugal','1992-05-28'),
+  ('Jose Reviejo','Espanha',NULL),
+  ('Tim Elverson','Reino Unido',NULL),
+  ('Marco Bellini','Itália',NULL),
+  ('Vidal Fitas','Portugal',NULL),
+  ('Isaiah Newkirk','Estados Unidos',NULL),
+  ('Américo Silva','Portugal',NULL),
+  ('Gustavo Veloso','Espanha',NULL),
+  ('Stijn De Vriese','Bélgica',NULL),
+  ('José Azevedo','Portugal',NULL),
+  ('Daniel Navarro','Espanha',NULL),
+  ('Joaquim Andrade','Portugal',NULL),
+  ('José Santos','Portugal',NULL),
+  ('Manuel Correia','Portugal',NULL),
+  ('Hernâni Brôco','Portugal',NULL),
+  ('Michael Tacci','Estados Unidos',NULL);
 
 
 INSERT INTO Equipa (paisorigem, numciclistas, nome, anofundacao, UCI_ID_DiretorDesportivo)
@@ -340,14 +357,14 @@ VALUES
 
 INSERT INTO Bicicleta (codigo, marca, modelo, anofabrico, numdorsal_ciclista)
 VALUES
-(1, 'Specialized', 'Tarmac SL7', 2023, 1),
-(2, 'Trek', 'Emonda SLR', 2022, 2),
-(3, 'Canyon', 'Ultimate CF', 2023, 3),
-(4, 'BMC', 'Teammachine SLR01', 2022, 4),
-(5, 'Giant', 'TCR Advanced SL', 2023, 5),
-(6, 'Pinarello', 'Dogma F12', 2023, 6),
-(7, 'Scott', 'Addict RC', 2022, 7),
-(8, 'Colnago', 'C64', 2023, 8),
-(9, 'Orbea', 'Orca M10', 2022, 9),
-(10, 'Cervelo', 'R5', 2023, 10);
+(0001, 'Specialized', 'Tarmac SL7', 2023, 1),
+(0002, 'Trek', 'Emonda SLR', 2022, 2),
+(0003, 'Canyon', 'Ultimate CF', 2023, 3),
+(0004, 'BMC', 'Teammachine SLR01', 2022, 4),
+(0005, 'Giant', 'TCR Advanced SL', 2023, 5),
+(0006, 'Pinarello', 'Dogma F12', 2023, 6),
+(0007, 'Scott', 'Addict RC', 2022, 7),
+(0008, 'Colnago', 'C64', 2023, 8),
+(0009, 'Orbea', 'Orca M10', 2022, 9),
+(0010, 'Cervelo', 'R5', 2023, 10);
 
