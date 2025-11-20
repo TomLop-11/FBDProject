@@ -81,12 +81,13 @@ CREATE TABLE Bicicleta (
 GO
 
 CREATE TABLE ResultadoEtapa (
-	tempofinal TIME NOT NULL PRIMARY KEY,
+	tempofinal TIME,
 	penalizacaotempo TIME,
 	bonificaotempo TIME,
 	UCI_ID_ciclista int NOT NULL,
 	ID_etapa int NOT NULL,
 	ID_classificacao int NOT NULL,
+	PRIMARY KEY (UCI_ID_ciclista,ID_etapa),
 	FOREIGN KEY (UCI_ID_ciclista) REFERENCES Ciclista(UCI_ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION,
 	FOREIGN KEY (ID_etapa) REFERENCES Etapa(ID)
@@ -104,9 +105,9 @@ CREATE TABLE Pertence (
 	UCI_ID_Ciclista int NOT NULL,
 	PRIMARY KEY (ID_equipa, UCI_ID_Ciclista),
 	FOREIGN KEY (UCI_ID_ciclista) REFERENCES Ciclista(UCI_ID)
-		ON UPDATE CASCADE ON DELETE NO ACTION,
+		ON UPDATE NO ACTION ON DELETE NO ACTION,
 	FOREIGN KEY (ID_equipa) REFERENCES Equipa(ID)
-		ON UPDATE CASCADE ON DELETE NO ACTION
+		ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 CREATE TABLE Patrocina (
@@ -207,13 +208,6 @@ CREATE TABLE Especificacao_Bicicleta (
 		ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
-CREATE TABLE Estado_ResultadoEtapa (
-	estado varchar(64) NOT NULL,
-	tempo_resultadoetapa TIME NOT NULL,
-	PRIMARY KEY (estado, tempo_resultadoetapa),
-	FOREIGN KEY (tempo_resultadoetapa) REFERENCES ResultadoEtapa(tempofinal)
-		ON UPDATE CASCADE ON DELETE NO ACTION
-);
 
 CREATE TABLE Formato_Etapa (
 	formato varchar(64) NOT NULL,
