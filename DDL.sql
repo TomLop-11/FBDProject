@@ -92,3 +92,34 @@ CREATE TABLE ResultadoEtapa (
 	ID_classificacao int NOT NULL,
 );
 GO
+
+CREATE TABLE Pertence (
+	data_fim DATE NOT NULL,
+	data_inicio DATE NOT NULL,
+	ID_equipa int NOT NULL,
+	UCI_ID_Ciclista int NOT NULL,
+);
+
+CREATE TABLE Patrocina (
+	data_fim DATE NOT NULL,
+	data_inicio DATE NOT NULL,
+	ID_equipa int NOT NULL,
+	Nome_patrocinador varchar(64) NOT NULL,
+);
+
+CREATE TABLE E_Patrocinado (
+	data_fim DATE NOT NULL,
+	data_inicio DATE NOT NULL,
+	ID_competicao int NOT NULL,
+	Nome_patrocinador varchar(64) NOT NULL,
+);
+
+CREATE TABLE Inclui (
+	ID_Etapa int NOT NULL,
+	ID_competicao int NOT NULL,
+);
+
+CREATE TABLE Disponibiliza (
+	ID_classificacao int NOT NULL,
+	ID_competicao int NOT NULL,
+);
