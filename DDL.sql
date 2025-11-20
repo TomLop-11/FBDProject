@@ -3,17 +3,32 @@
 -- ENTIDADES
 CREATE TABLE Pessoa (
 	UCI_ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	datanascimento DATE,
+	data_nascimento DATE,
 	nome varchar(64) NOT NULL,
 	nacionalidade varchar(64) NOT NULL
 );
 CREATE TABLE Competição (
 	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	organizador varchar(64),
+	organizador varchar(64) NOT NULL,
 	nome varchar(64) NOT NULL,
-	datainicio DATE NOT NULL,
-	datafim DATE NOT NULL,
+	data_inicio DATE NOT NULL,
+	data_fim DATE NOT NULL,
 	n_etapas int NOT NULL
+);
+CREATE TABLE Patrocinador (
+	nome varchar(64) NOT NULL PRIMARY KEY,
+	contacto varchar(64)
+);
+CREATE TABLE Etapa (
+	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	duracao TIME NOT NULL,
+	num_etapa int NOT NULL,
+	distancia float NOT NULL,
+);
+CREATE TABLE Classificação (
+	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	diferenca_vencedor float NOT NULL,
+	posicao int NOT NULL
 );
 GO
 
@@ -22,48 +37,26 @@ CREATE TABLE DiretorDesportivo (
 	FOREIGN KEY (UCI_ID) REFERENCES Pessoa(UCI_ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION,
 );
-GO
-CREATE TABLE Etapa (
-	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	duração TIME NOT NULL,
-	numetapa int NOT NULL,
-	distância float NOT NULL,
-	velocidademedia float
-);
-GO
-
-CREATE TABLE Classificação (
-	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	diferençavencedor float NOT NULL,
-	posição int NOT NULL
-);
-GO
-
-CREATE TABLE Equipa (
-	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	paisorigem varchar(64),
-	numciclistas int NOT NULL,
-	nome int NOT NULL UNIQUE,
-	anofundacao int,
-	UCI_ID_DiretorDesportivo int NOT NULL,
-	FOREIGN KEY (UCI_ID_DiretorDesportivo) REFERENCES DiretorDesportivo(UCI_ID)
-		ON UPDATE CASCADE ON DELETE NO ACTION
-);
-GO
 
 CREATE TABLE Ciclista (
-	numdorsal int NOT NULL,
 	UCI_ID int NOT NULL PRIMARY KEY,
+	num_dorsal int NOT NULL,
 	FOREIGN KEY (UCI_ID) REFERENCES Pessoa(UCI_ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION
 
 );
-GO
-CREATE TABLE Patrocinador (
-	nome varchar(64) NOT NULL PRIMARY KEY,
-	contacto varchar(64)
+
+CREATE TABLE Equipa (
+	ID int IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	pais_origem varchar(64),
+	num_ciclistas int NOT NULL,
+	nome int NOT NULL UNIQUE,
+	ano_fundacao int,
+	UCI_ID_DiretorDesportivo int NOT NULL,
+	FOREIGN KEY (UCI_ID_DiretorDesportivo) REFERENCES DiretorDesportivo(UCI_ID)
+		ON UPDATE CASCADE ON DELETE NO ACTION
 );
-GO
+
 CREATE TABLE Localidade (
 	latitude varchar(64) NOT NULL,
 	longitude varchar(64) NOT NULL,
@@ -76,7 +69,7 @@ CREATE TABLE Localidade (
 	FOREIGN KEY (ID_etapa) REFERENCES Etapa(ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION
 );
-GO
+
 CREATE TABLE Bicicleta (
 	codigo int NOT NULL PRIMARY KEY,
 	marca varchar(64),
@@ -87,6 +80,7 @@ CREATE TABLE Bicicleta (
 		ON UPDATE CASCADE ON DELETE NO ACTION
 );
 GO
+
 CREATE TABLE ResultadoEtapa (
 	tempofinal TIME NOT NULL PRIMARY KEY,
 	penalizacaotempo TIME,
@@ -98,7 +92,7 @@ CREATE TABLE ResultadoEtapa (
 		ON UPDATE CASCADE ON DELETE NO ACTION,
 	FOREIGN KEY (ID_etapa) REFERENCES Etapa(ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION,
-	FOREIGN KEY (ID_classificacao) REFERENCES Classificacao(ID)
+	FOREIGN KEY (ID_classificacao) REFERENCES Classificação(ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION
 );
 GO
@@ -111,7 +105,7 @@ CREATE TABLE Pertence (
 	UCI_ID_Ciclista int NOT NULL,
 	FOREIGN KEY (UCI_ID_ciclista) REFERENCES Ciclista(UCI_ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION,
-	FOREIGN KEY (ID_etapa) REFERENCES Etapa(ID)
+	FOREIGN KEY (ID_equipa) REFERENCES Equipa(ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
@@ -133,7 +127,7 @@ CREATE TABLE E_Patrocinado (
 	Nome_patrocinador varchar(64) NOT NULL,
 	FOREIGN KEY (Nome_patrocinador) REFERENCES Patrocinador(Nome)
 		ON UPDATE CASCADE ON DELETE NO ACTION,
-	FOREIGN KEY (ID_competicao) REFERENCES Competicao(ID)
+	FOREIGN KEY (ID_competicao) REFERENCES Competição(ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
@@ -142,16 +136,25 @@ CREATE TABLE Inclui (
 	ID_competicao int NOT NULL,
 	FOREIGN KEY (ID_Etapa) REFERENCES Etapa(ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION,
-	FOREIGN KEY (ID_competicao) REFERENCES Competicao(ID)
+	FOREIGN KEY (ID_competicao) REFERENCES Competição(ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
 CREATE TABLE Disponibiliza (
 	ID_classificacao int NOT NULL,
 	ID_competicao int NOT NULL,
-	FOREIGN KEY (ID_classificacao) REFERENCES Classificacao(ID)
+	FOREIGN KEY (ID_classificacao) REFERENCES Classificação(ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION,
-	FOREIGN KEY (ID_competicao) REFERENCES Competicao(ID)
+	FOREIGN KEY (ID_competicao) REFERENCES Competição(ID)
+		ON UPDATE CASCADE ON DELETE NO ACTION
+);
+
+CREATE TABLE Participa (
+	ID_etapa int NOT NULL,
+	UCI_ID_Ciclista int NOT NULL,
+	FOREIGN KEY (UCI_ID_ciclista) REFERENCES Ciclista(UCI_ID)
+		ON UPDATE CASCADE ON DELETE NO ACTION,
+	FOREIGN KEY (ID_etapa) REFERENCES Etapa(ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION
 );
 GO
@@ -174,7 +177,7 @@ CREATE TABLE Categoria_Ciclista (
 CREATE TABLE Categoria_Classificacao (
 	categoria varchar(64) NOT NULL,
 	ID_classificacao int NOT NULL PRIMARY KEY
-	FOREIGN KEY (ID_classificacao) REFERENCES Classificacao(ID)
+	FOREIGN KEY (ID_classificacao) REFERENCES Classificação(ID)
 		ON UPDATE CASCADE ON DELETE NO ACTION,
 );
 
@@ -202,9 +205,7 @@ CREATE TABLE Estado_ResultadoEtapa (
 CREATE TABLE Formato_Etapa (
 	formato varchar(64),
 	ID_Etapa int NOT NULL PRIMARY KEY,
-	FOREIGN KEY (ID_Etapa) REFERENCES Etapa(ID);
-		ON UPDATE CASCADE ON DELETE NO ACTION,
+	FOREIGN KEY (ID_Etapa) REFERENCES Etapa(ID)
+		ON UPDATE CASCADE ON DELETE NO ACTION
 );
-
 GO
-
