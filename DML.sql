@@ -368,3 +368,200 @@ VALUES
 (0009, 'Orbea', 'Orca M10', 2022, 9),
 (0010, 'Cervelo', 'R5', 2023, 10);
 
+------------------------------------------------------------
+-- CLASSIFICAÇÃO GERAL FINAL (top 10)
+------------------------------------------------------------
+INSERT INTO Classificacao (diferenca_vencedor, posicao)
+VALUES 
+(0, 1),           -- Artem Nych
+(75, 2),          -- Alexis Guerin (+1:15)
+(111, 3),         -- Byron Munton (+1:51)
+(144, 4),         -- Jesus David Peña (+2:24)
+(194, 5),         -- Tiago Antunes (+3:14)
+(272, 6),         -- Pedro Silva (+4:32)
+(282, 7),         -- Edgar Cadena (+4:42)
+(285, 8),         -- Emanuel Duarte (+4:45)
+(330, 9),         -- Lucas Lopes (+5:30)
+(331, 10);        -- Adrián Bustamante (+5:31)
+
+(0, 1),   -- Pontos (Tivani)
+(0, 1),   -- Montanha (Hugo Nunes)
+(0, 1),   -- Juventude (Lucas Lopes)
+(0, 1);   -- Equipas (Anicolor/Tien21)
+
+------------------------------------------------------------
+-- CATEGORIA PARA CLASSIFICAÇÕES DA GERAL (1–10)
+------------------------------------------------------------
+INSERT INTO Categoria_Classificacao (categoria, ID_classificacao)
+VALUES
+('Geral', 1),
+('Geral', 2),
+('Geral', 3),
+('Geral', 4),
+('Geral', 5),
+('Geral', 6),
+('Geral', 7),
+('Geral', 8),
+('Geral', 9),
+('Geral', 10);
+('Pontos', 11),
+('Montanha', 12),
+('Juventude', 13),
+('Equipas', 14);
+
+------------------------------------------------------------
+-- PRÓLOGO – 06/08/2025 – vencedor: Rafael Reis – 3:51
+------------------------------------------------------------
+INSERT INTO ResultadoEtapa (tempofinal, penalizacaotempo, bonificaotempo, UCI_ID_ciclista, ID_etapa, ID_classificacao)
+('00:03:51', '00:00:00', '00:00:00',
+        --ID_DO_CICLISTA_REIS, --ID_ETAPA_PROLOGO, --ID_CLASSIF_ETAPA_PROLOGO);
+
+('04:05:00', '00:00:00', '00:00:10',
+        --ID_TIVANI, --ID_ETAPA1, --ID_CLASSIF_ETAPA1);
+
+('04:32:00', '00:00:00', '00:00:10',
+        --ID_TIVANI, --ID_ETAPA9, --ID_CLASSIF_ETAPA9);
+('00:19:45', '00:00:00', '00:00:00',
+        --ID_REIS, --ID_ETAPA10, --ID_CLASSIF_ETAPA10);
+
+
+
+INSERT INTO Camisola_Ciclista (camisola, UCI_ID_ciclista)
+VALUES
+('Amarela', --ID_NYCH),
+('Verde', --ID_TIVANI),
+('Azul', --ID_HUGO_NUNES),
+('Branca', --ID_LUCAS_LOPES);
+
+INSERT INTO Categoria_Ciclista (categoria, UCI_ID_ciclista)
+VALUES
+('Geral', --ID_NYCH),
+('Sprinter', --ID_TIVANI),
+('Montanha', --ID_HUGO_NUNES),
+('Jovem', --ID_LUCAS_LOPES);
+
+
+INSERT INTO Categoria_Equipa (categoria, ID_equipa)
+VALUES
+('ClassificacaoEquipas', --ID_ANICOLOR);
+
+
+INSERT INTO Patrocinador (nome, contacto) 
+VALUES
+('Continente', 'https://www.continente.pt'),
+('Fidelidade', 'https://www.fidelidade.pt'),
+('Shimano', 'https://www.shimano.com'),
+('Vitalis', 'https://www.vitalis.pt'),
+('Sabseg', 'https://www.sabseg.pt'),
+('Cosmos', 'https://www.cosmos.pt'),
+('Valpirent', 'https://www.valpirent.pt'),
+('ABTF Betão', 'instagram: @abtf_betao');
+
+-- Assumindo que 'Rúben Pereira' já existe na tabela Pessoa com UCI_ID = 14
+INSERT INTO DiretorDesportivo (UCI_ID) VALUES
+(112),  -- Ruben Pereira
+(113),  -- Jose Reviejo
+(114),  -- Tim Elverson
+(115),  -- Marco Bellini
+(116),  -- Vidal Fitas
+(117),  -- Isaiah Newkirk
+(118),  -- Américo Silva
+(119),  -- Gustavo Veloso
+(120),  -- Stijn De Vriese
+(121),  -- José Azevedo
+(122),  -- Daniel Navarro
+(123),  -- Joaquim Andrade
+(124),  -- José Santos
+(125),  -- Manuel Correia
+(126),  -- Hernâni Brôco
+(127);  -- Michael Tacci
+
+
+
+INSERT INTO Especificacao_Bicicleta (especificacao, Codigo_bicicleta) 
+VALUES
+('Grupo: Shimano Dura-Ace Di2, Quadro: Carbono Aero', 0001),
+('Grupo: SRAM Red eTap, Quadro: Carbono Endurance', 0002),
+('Grupo: Campagnolo Super Record, Quadro: Carbono Leve', 0003),
+('Rodas: Carbon Clincher 50mm, Pneus 25mm', 0004),
+('TT Setup: Aerobar + Disco Traseiro', 0005),
+('Transmissão: Shimano Ultegra, Quadro: Carbono Compact', 0006);
+
+
+INSERT INTO Formato_Etapa (formato, ID_Etapa) VALUES
+('Prologo', 1),
+('Linha', 2),
+('Linha', 3),
+('Montanha', 4),      -- Senhora da Graça (etapa de montanha)
+('Linha', 5),
+('Linha', 6),
+('Montanha', 7),      -- Torre / subida relevante
+('Linha', 8),
+('Linha', 9),         -- Montejunto foi dura mas classifiquei como 'Linha' se preferires 'Montanha' muda
+('Contrarrelogio Individual', 10);
+
+
+  -- 1) INCLUI — ligar Etapa ↔ Competição
+-- Supondo que a competição tem ID = 1
+INSERT INTO Inclui (ID_Etapa, ID_competicao) VALUES
+(1, 1),
+(2, 1),
+(3, 1),
+(4, 1),
+(5, 1),
+(6, 1),
+(7, 1),
+(8, 1),
+(9, 1),
+(10,1);
+
+
+-- 2) PARTICIPA — ciclista participa em etapa
+-- Exemplo fictício: ciclistas 1 a 10 participam em todas as 10 etapas
+INSERT INTO Participa (ID_etapa, UCI_ID_ciclista) VALUES
+(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8),(1,9),(1,10),
+(2,1),(2,2),(2,3),(2,4),(2,5),(2,6),(2,7),(2,8),(2,9),(2,10),
+(3,1),(3,2),(3,3),(3,4),(3,5),(3,6),(3,7),(3,8),(3,9),(3,10),
+(4,1),(4,2),(4,3),(4,4),(4,5),(4,6),(4,7),(4,8),(4,9),(4,10),
+(5,1),(5,2),(5,3),(5,4),(5,5),(5,6),(5,7),(5,8),(5,9),(5,10),
+(6,1),(6,2),(6,3),(6,4),(6,5),(6,6),(6,7),(6,8),(6,9),(6,10),
+(7,1),(7,2),(7,3),(7,4),(7,5),(7,6),(7,7),(7,8),(7,9),(7,10),
+(8,1),(8,2),(8,3),(8,4),(8,5),(8,6),(8,7),(8,8),(8,9),(8,10),
+(9,1),(9,2),(9,3),(9,4),(9,5),(9,6),(9,7),(9,8),(9,9),(9,10),
+(10,1),(10,2),(10,3),(10,4),(10,5),(10,6),(10,7),(10,8),(10,9),(10,10);
+
+
+-- 3) PERTENCE — ciclista pertence a uma equipa durante o período da prova  
+-- Exemplo genérico; adaptar datas (início/fim) conforme a tua lógica
+INSERT INTO Pertence (data_inicio, data_fim, ID_equipa, UCI_ID_Ciclista) VALUES
+('2025-08-01','2025-08-17', 1, 1),
+('2025-08-01','2025-08-17', 1, 2),
+('2025-08-01','2025-08-17', 2, 3),
+('2025-08-01','2025-08-17', 2, 4),
+-- ... continua para todos os ciclistas/equipa que participam ...
+
+
+-- 4) PATROCINA — equipa patrocinada por patrocinador
+-- Exemplo: equipa 1 (ID=1) é patrocinada por 'Continente' e 'Shimano' durante 2025
+INSERT INTO Patrocina (data_inicio, data_fim, ID_equipa, Nome_patrocinador) VALUES
+('2025-01-01','2025-12-31', 1, 'Continente'),
+('2025-01-01','2025-12-31', 1, 'Shimano');
+
+
+-- 5) E_Patrocinado — patrocinador da competição
+-- A competição 1 (Volta 2025) tem como patrocinadores 'Continente' e 'Fidelidade'
+INSERT INTO E_Patrocinado (data_inicio, data_fim, ID_competicao, Nome_patrocinador) VALUES
+('2025-01-01','2025-08-17', 1, 'Continente'),
+('2025-01-01','2025-08-17', 1, 'Fidelidade');
+
+
+-- 6) Disponibiliza — ligando classificação à competição  
+-- Exemplo: todas as classificações (IDs 1 a 14) são relevantes para a competição 1
+INSERT INTO Disponibiliza (ID_classificacao, ID_competicao) VALUES
+(1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1),(8,1),(9,1),(10,1),
+(11,1),(12,1),(13,1),(14,1);
+
+
+
+
+
