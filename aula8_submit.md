@@ -6,24 +6,64 @@
 ### *a)*
 
 ```
-SET NOCOUNT ON;
+CREATE PROCEDURE RemoveEmployee @Ssn CHAR(9)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
     BEGIN TRY
-        BEGIN TRANSACTION
-            DELETE FROM Works_ON WHERE ESSN = @SSN;
-            DELETE FROM [DEPENDENT] WHERE ESSN = @SSN;
-            DELETE FROM EMPLOYEE WHERE ESSN = @SSN;
-        COMMIT TRANSACTION SCHEDULEDELETE
+        BEGIN TRANSACTION;
+
+        DELETE FROM DEPENDENT 
+        WHERE Essn = @Ssn;
+
+        DELETE FROM WORKS_ON 
+        WHERE Essn = @Ssn;
+
+        UPDATE EMPLOYEE
+        SET Super_ssn = NULL
+        WHERE Super_ssn = @Ssn;
+
+        UPDATE DEPARTMENT
+        SET Mgr_ssn = NULL
+        WHERE Mgr_ssn = @Ssn;
+
+        DELETE FROM EMPLOYEE
+        WHERE Ssn = @Ssn;
+
+        COMMIT TRANSACTION;
     END TRY
     BEGIN CATCH
-        ROLLBACK TRANSACTION SCHEDULEDELETE
+        ROLLBACK TRANSACTION;
+        THROW;
     END CATCH
-    END
+END
+
 ```
 
 ### *b)* 
 
 ```
-... Write here your answer ...
+CREATE PROCEDURE RecordEmployee
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	BEGIN TRY
+		BEGIN TRANSACTION
+
+		SELECT E.Fname, E.Minit, E.Lname, E.Ssn, D.Dname AS Department, D.Mgr_start_date, DATEDIFF(YEAR, D.Mgr_start_date, getdate()) AS YearsManager
+		FROM Department as D JOIN Employee as E ON E.Ssn = D.Mgr_ssn
+		ORDER BY D.Mgr_start_date
+
+		COMMIT TRANSACTION;
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END
 ```
 
 ### *c)* 
