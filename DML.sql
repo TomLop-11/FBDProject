@@ -457,7 +457,6 @@ VALUES
 ('Valpirent', 'https://www.valpirent.pt'),
 ('ABTF Betão', 'instagram: @abtf_betao');
 
--- Assumindo que 'Rúben Pereira' já existe na tabela Pessoa com UCI_ID = 14
 INSERT INTO DiretorDesportivo (UCI_ID) VALUES
 (112),  -- Ruben Pereira
 (113),  -- Jose Reviejo
