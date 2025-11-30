@@ -69,13 +69,62 @@ END
 ### *c)* 
 
 ```
-... Write here your answer ...
+CREATE TRIGGER LimitManager
+ON
+DEPARTMENT
+FOR INSERT, UPDATE
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	BEGIN TRY
+		BEGIN TRANSACTION
+
+        IF EXISTS (
+            SELECT i.Mgr_ssn
+            FROM inserted AS i 
+                JOIN Department as D ON 
+                D.Mgr_ssn = i.Mgr_ssn AND D.Dnumber <> i.Dnumber
+        )
+
+		COMMIT TRANSACTION;
+    END TRY
+
+    BEGIN CATCH
+        RAISERROR('Não pode ser gestor mais do que um departamento', 16, 1);
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END
 ```
 
 ### *d)* 
 
 ```
-... Write here your answer ...
+CREATE TRIGGER VencimentoFuncvsGest
+ON
+EMPLOYEE
+AFTER INSERT, UPDATE
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	BEGIN TRY
+		BEGIN TRANSACTION
+
+        UPDATE E
+        SET E.Salary = GM.Salary - 1
+        FROM Employee as E JOIN inserted AS i ON E.Ssn = i.Ssn JOIN Department AS D ON D.Dnumber = E.Dno JOIN Employee as GM ON GM.Dno=D.Dnumber
+        WHERE E.Salary > i.Salary
+
+		COMMIT TRANSACTION;
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END
 ```
 
 ### *e)* 
