@@ -254,5 +254,7 @@ END;
 ### *i)* 
 
 ```
-... Write here your answer ...
+As Stored Procedures permitem executar blocos de comandos SQL armazenados no servidor, com lógica complexa (condições, ciclos, alterações de dados) e, por isso, servem para realizar operações repetitivas.
+As UDFs servem para devolver resultados — um valor ou um conjunto de linhas — e não podem alterar dados. Assim, estes funcionam corretamente para cálculos e consultas reutilizáveis.
+Utiliza-se uma Stored Procedure quando se pretende alterar tabelas ou realizar processos internos, enquanto que se utiliza uma UDF quando é necessário apenas consultar e obter informação tratada de forma simples.
 ```
