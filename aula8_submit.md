@@ -130,25 +130,125 @@ END
 ### *e)* 
 
 ```
-... Write here your answer ...
+CREATE FUNCTION dbo.FuncionarioProjetos(@ssn CHAR(9))
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT p.pname, p.plocation
+    FROM project p
+    INNER JOIN works_on w ON p.pnumber = w.pno
+    WHERE w.essn = @ssn
+);
 ```
 
 ### *f)* 
 
 ```
-... Write here your answer ...
+CREATE FUNCTION dbo.EmployeeAboveAverage(@dno INT)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT *
+    FROM employee
+    WHERE dno = @dno
+      AND salary > (SELECT AVG(salary) FROM employee WHERE dno = @dno)
+);
 ```
 
 ### *g)* 
 
 ```
-... Write here your answer ...
+CREATE FUNCTION dbo.employeeDeptHighAverage(@dno INT)
+RETURNS @ProjectBudget TABLE
+(
+    pnumber INT,
+    pname VARCHAR(50),
+    monthly_cost DECIMAL(10,2),
+    accumulated_cost DECIMAL(10,2)
+)
+AS
+BEGIN
+    DECLARE @pno INT, @pname VARCHAR(50), @monthly_cost DECIMAL(10,2), @accum DECIMAL(10,2)
+    SET @accum = 0;
+
+    DECLARE project_cursor CURSOR FOR
+        SELECT p.pnumber, p.pname
+        FROM project p
+        WHERE p.dnum = @dno;
+
+    OPEN project_cursor;
+    FETCH NEXT FROM project_cursor INTO @pno, @pname;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        SELECT @monthly_cost = SUM(e.salary * w.hours/40.0) 
+        FROM works_on w
+        INNER JOIN employee e ON w.essn = e.ssn
+        WHERE w.pno = @pno;
+
+        SET @accum = @accum + ISNULL(@monthly_cost,0);
+
+        INSERT INTO @ProjectBudget(pnumber, pname, monthly_cost, accumulated_cost)
+        VALUES(@pno, @pname, ISNULL(@monthly_cost,0), @accum);
+
+        FETCH NEXT FROM project_cursor INTO @pno, @pname;
+    END
+
+    CLOSE project_cursor;
+    DEALLOCATE project_cursor;
+
+    RETURN;
+END;
 ```
 
 ### *h)* 
 
 ```
-... Write here your answer ...
+###Solução "After"
+
+CREATE TRIGGER trg_DepartmentDeleted_After
+ON Department
+AFTER DELETE
+AS
+BEGIN
+    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'department_deleted')
+    BEGIN
+        SELECT *
+        INTO department_deleted
+        FROM Department
+        WHERE 1 = 0;
+    END
+
+    INSERT INTO department_deleted
+    SELECT *
+    FROM deleted;
+END;
+
+###Solução "Instead of"
+
+CREATE TRIGGER trg_DepartmentDeleted_Instead
+ON Department
+INSTEAD OF DELETE
+AS
+BEGIN
+    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'department_deleted')
+    BEGIN
+        SELECT *
+        INTO department_deleted
+        FROM Department
+        WHERE 1 = 0;
+    END
+
+    INSERT INTO department_deleted
+    SELECT *
+    FROM deleted;
+
+    DELETE d
+    FROM Department d
+    INNER JOIN deleted del ON d.dnumber = del.dnumber;
+END;
 ```
 
 ### *i)* 
