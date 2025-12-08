@@ -12,7 +12,7 @@ Complete the following table.
 | 3.2  | SELECT * FROM Production.WorkOrder WHERE WorkOrderID between 1 and 72591                                   | 72591 | 0.474      | 554        | 701       | PK_WordOrder_WorkOrderID           | Busca de Indice Clusterizado                     |            |
 | 4    | SELECT * FROM Production.WorkOrder WHERE StartDate = '2012-05-14'                                          | 55    | 0.474      | 554        | 47        | PK_WordOrder_WorkOrderID           | Verificação do Indice Clusterizado                     |            |
 | 5    | SELECT * FROM Production.WorkOrder WHERE ProductID = 757                                                   | 9     | 0.00329      | 44         | 41        | IX_WorkOrder_ProductID           | Verificação do Indice Clusterizado                      |            |
-| 6.1  | SELECT WorkOrderID, StartDate FROM Production.WorkOrder WHERE ProductID = 757                              | 9     | 0.00329      | 44         | 33        |            | Busca de Indice                     |            |
+| 6.1  | SELECT WorkOrderID, StartDate FROM Production.WorkOrder WHERE ProductID = 757                              | 9     | 0.00329      | 44         | 33        | IX_WorkOrder_ProductID           | Busca de Indice                     |            |
 | 6.2  | SELECT WorkOrderID, StartDate FROM Production.WorkOrder WHERE ProductID = 945                              | 1106  | 0.474       | 554        | 48        |PK_WordOrder_WorkOrderID            | Verificação do Indice Clusterizado                     |            |
 | 6.3  | SELECT WorkOrderID FROM Production.WorkOrder WHERE ProductID = 945 AND StartDate = '2011-12-04'            | 1     | 0.474      | 556        | 42        | PK_WordOrder_WorkOrderID           | Verificação do Indice Clusterizado                       |            |
 | 7    | SELECT WorkOrderID, StartDate FROM Production.WorkOrder WHERE ProductID = 945 AND StartDate = '2011-12-04' | 1     | 0.474       | 556        | 38        | PK_WordOrder_WorkOrderID           | Verificação do Indice Clusterizado                       |            |
@@ -30,11 +30,11 @@ ADD CONSTRAINT PK_mytemp_rid PRIMARY KEY CLUSTERED (rid);
 ### b)
 
 ```
-index 		fragmentação (avg)	espaço de página (avg)	page_count
+index 		fragmentação (avg)	    espaço de página (avg)	page_count
 
-CLUSTERED INDEX	98,9674682210737	67,1782354361705	854
-CLUSTERED INDEX	0			89,8640327328886	2
-CLUSTERED INDEX	0			0,395364583748204	1
+CLUSTERED INDEX	98,9674682210737	67,1782354361705	    854
+CLUSTERED INDEX	0			        89,8640327328886	    2
+CLUSTERED INDEX	0			        0,395364583748204	    1
 ```
 
 ### c)
@@ -42,19 +42,19 @@ CLUSTERED INDEX	0			0,395364583748204	1
 ```
 index fillfactor a 65% 
 
-index 		fragmentação (avg)	espaço de página (avg)	page_count
-CLUSTERED INDEX	99,1616714728509	68,8601433160346	835
-CLUSTERED INDEX	0			87,5596874460104	2
-CLUSTERED INDEX	0			0,395654583652204	1
+index 		fragmentação (avg)	    espaço de página (avg)	page_count
+CLUSTERED INDEX	99,1616714728509	68,8601433160346	    835
+CLUSTERED INDEX	0			        87,5596874460104	    2
+CLUSTERED INDEX	0			        0,395654583652204	    1
 
 tempo de execução 11 minutos e 58 segundos
 
 index fillfactor a 80%
 	
-index 		fragmentação (avg)	espaço de página (avg)	page_count
-CLUSTERED INDEX	99,1926172247515	66,2382258463059	867
-CLUSTERED INDEX	0			60,6755778583397	3
-CLUSTERED INDEX	0			0,615386706203125	1
+index 		fragmentação (avg)	    espaço de página (avg)	page_count
+CLUSTERED INDEX	99,1926172247515	66,2382258463059	    867
+CLUSTERED INDEX	0			        60,6755778583397	    3
+CLUSTERED INDEX	0			        0,615386706203125	    1
 
 tempo de execução 12 minutos e 56 segundos
 ```
