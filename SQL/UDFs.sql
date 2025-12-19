@@ -1,3 +1,7 @@
+------------------------------------------------------------
+-- UDF's
+------------------------------------------------------------
+
 CREATE OR ALTER FUNCTION Volta_Portugal.fn_CalcularIdade (@UCI_ID INT)
 RETURNS INT
 AS

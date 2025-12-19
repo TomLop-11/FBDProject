@@ -29,6 +29,7 @@ BEGIN
     END
 END;
 GO
+
 -- 2) Atualizar o contador de etapas na competição
 GO
 CREATE OR ALTER TRIGGER Volta_Portugal.trg_AtualizarContagemEtapas
@@ -81,6 +82,7 @@ BEGIN
     END
 END;
 GO
+
 -- 4)
 -- 5)
 -- 6)

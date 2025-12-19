@@ -3,25 +3,34 @@
 ------------------------------------------------------------
 
 -- 1) Adicionar Ciclista
-CREATE OR ALTER PROCEDURE Volta_Portugal.sp_AdicionarCiclista
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_RegistarCiclista
     @nome VARCHAR(64),
     @nacionalidade VARCHAR(64),
     @data_nascimento DATE,
-    @num_dorsal INT
+    @num_dorsal INT,
+    @ID_equipa INT,
+    @data_inicio DATE,
+    @data_fim DATE = NULL -- Opcional
 AS
 BEGIN
     SET NOCOUNT ON;
+    SET XACT_ABORT ON; -- Garante rollback automático em caso de erro grave
+
     BEGIN TRANSACTION;
     BEGIN TRY
-        -- Inserir na tabela base Pessoa
+        -- 1. Inserir na tabela base Pessoa
         INSERT INTO Volta_Portugal.Pessoa (nome, nacionalidade, data_nascimento)
         VALUES (@nome, @nacionalidade, @data_nascimento);
 
         DECLARE @NovoID INT = SCOPE_IDENTITY();
 
-        -- Inserir na tabela especializada Ciclista
+        -- 2. Inserir na tabela especializada Ciclista
         INSERT INTO Volta_Portugal.Ciclista (UCI_ID, num_dorsal)
         VALUES (@NovoID, @num_dorsal);
+
+        -- 3. Associar imediatamente à Equipa (Tabela Pertence)
+        INSERT INTO Volta_Portugal.Pertence (UCI_ID_Ciclista, ID_equipa, data_inicio, data_fim)
+        VALUES (@NovoID, @ID_equipa, @data_inicio, @data_fim);
 
         COMMIT TRANSACTION;
     END TRY
@@ -33,22 +42,33 @@ END;
 GO
 
 -- 2) Adicionar Diretor Desportivo
-CREATE OR ALTER PROCEDURE Volta_Portugal.sp_AdicionarDiretor
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_RegistarDiretor
     @nome VARCHAR(64),
     @nacionalidade VARCHAR(64),
-    @data_nascimento DATE
+    @data_nascimento DATE,
+    @ID_equipa INT,
+    @data_inicio DATE,
+    @data_fim DATE = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
     BEGIN TRANSACTION;
     BEGIN TRY
-        INSERT INTO Volta_Portugal.Pessoa (nome, nacionalidade, data_nascimento) --
+        -- 1. Inserir na tabela base Pessoa
+        INSERT INTO Volta_Portugal.Pessoa (nome, nacionalidade, data_nascimento)
         VALUES (@nome, @nacionalidade, @data_nascimento);
 
         DECLARE @NovoID INT = SCOPE_IDENTITY();
 
-        INSERT INTO Volta_Portugal.DiretorDesportivo (UCI_ID) --
+        -- 2. Inserir na tabela especializada DiretorDesportivo
+        INSERT INTO Volta_Portugal.DiretorDesportivo (UCI_ID)
         VALUES (@NovoID);
+
+        -- 3. Associar imediatamente à Equipa (Tabela Orienta)
+        INSERT INTO Volta_Portugal.Orienta (UCI_ID_DiretorDesportivo, ID_equipa, data_inicio, data_fim)
+        VALUES (@NovoID, @ID_equipa, @data_inicio, @data_fim);
 
         COMMIT TRANSACTION;
     END TRY
@@ -56,34 +76,6 @@ BEGIN
         IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
         THROW;
     END CATCH
-END;
-GO
-
--- 3) Associar Ciclista a uma equipa
-CREATE OR ALTER PROCEDURE Volta_Portugal.sp_AssociarCiclistaEquipa
-    @UCI_ID_Ciclista INT,
-    @ID_equipa INT,
-    @data_inicio DATE,
-    @data_fim DATE
-AS
-BEGIN
-    SET NOCOUNT ON;
-    INSERT INTO Volta_Portugal.Pertence (data_inicio, data_fim, ID_equipa, UCI_ID_Ciclista) --
-    VALUES (@data_inicio, @data_fim, @ID_equipa, @UCI_ID_Ciclista);
-END;
-GO
-
--- 4) Associar Diretor Desportivo a uma equipa
-CREATE OR ALTER PROCEDURE Volta_Portugal.sp_AssociarDiretorEquipa
-    @UCI_ID_Diretor INT,
-    @ID_equipa INT,
-    @data_inicio DATE,
-    @data_fim DATE
-AS
-BEGIN
-    SET NOCOUNT ON;
-    INSERT INTO Volta_Portugal.Orienta (data_inicio, data_fim, ID_equipa, UCI_ID_DiretorDesportivo) --
-    VALUES (@data_inicio, @data_fim, @ID_equipa, @UCI_ID_Diretor);
 END;
 GO
 
@@ -359,10 +351,106 @@ BEGIN
     PRINT 'Patrocinador removido da competição com sucesso.';
 END;
 GO
--- 14)
--- 15)
--- 16)
--- 17)
+
+-- 14) Registar Resultado de Etapa
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_RegistarResultadoEtapa
+    @UCI_ID_ciclista INT,
+    @ID_etapa INT,
+    @tempofinal TIME,
+    @penalizacao TIME = '00:00:00',
+    @bonificacao TIME = '00:00:00',
+    @posicao INT,
+    @diferenca_vencedor TIME
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- 1. Criar primeiro a entrada na tabela Classificacao
+        INSERT INTO Volta_Portugal.Classificacao (diferenca_vencedor, posicao)
+        VALUES (@diferenca_vencedor, @posicao);
+        
+        DECLARE @idClass INT = SCOPE_IDENTITY();
+
+        -- 2. Inserir o resultado final ligado a essa classificação
+        INSERT INTO Volta_Portugal.ResultadoEtapa 
+            (tempofinal, penalizacaotempo, bonificaotempo, UCI_ID_ciclista, ID_etapa, ID_classificacao)
+        VALUES 
+            (@tempofinal, @penalizacao, @bonificacao, @UCI_ID_ciclista, @ID_etapa, @idClass);
+
+        COMMIT TRANSACTION;
+        PRINT 'Resultado e classificação registados com sucesso.';
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+-- 15) Transferir Ciclista de Equipa
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_TransferirCiclista
+    @UCI_ID_ciclista INT,
+    @ID_equipa_nova INT,
+    @data_transferencia DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- 1. Encerrar o contrato atual (onde a data_fim ainda não passou)
+        UPDATE Volta_Portugal.Pertence 
+        SET data_fim = @data_transferencia 
+        WHERE UCI_ID_Ciclista = @UCI_ID_ciclista AND data_fim > @data_transferencia;
+
+        -- 2. Criar o novo contrato na equipa nova
+        INSERT INTO Volta_Portugal.Pertence (data_inicio, data_fim, ID_equipa, UCI_ID_Ciclista)
+        VALUES (@data_transferencia, '2025-12-31', @ID_equipa_nova, @UCI_ID_ciclista);
+
+        COMMIT TRANSACTION;
+        PRINT 'Transferência concluída.';
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+-- 16) Atribuir Camisola a um Ciclista
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_AtribuirCamisola
+    @UCI_ID_ciclista INT,
+    @cor_camisola VARCHAR(64)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    -- Se o ciclista já tiver essa camisola, não faz nada para evitar erro de PK
+    IF NOT EXISTS (SELECT 1 FROM Volta_Portugal.Camisola_Ciclista 
+                   WHERE camisola = @cor_camisola AND UCI_ID_ciclista = @UCI_ID_ciclista)
+    BEGIN
+        INSERT INTO Volta_Portugal.Camisola_Ciclista (camisola, UCI_ID_ciclista)
+        VALUES (@cor_camisola, @UCI_ID_ciclista);
+        PRINT 'Camisola atribuída.';
+    END
+END;
+GO
+-- 17) Adicionar Localidade a uma Etapa
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_AdicionarLocalidadeEtapa
+    @ID_etapa INT,
+    @nome_local VARCHAR(64),
+    @distrito VARCHAR(64),
+    @ordem INT,
+    @lat VARCHAR(64),
+    @long VARCHAR(64),
+    @alt VARCHAR(64)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO Volta_Portugal.Localidade (latitude, longitude, altitude, nome, distrito, ordem, ID_etapa)
+    VALUES (@lat, @long, @alt, @nome_local, @distrito, CAST(@ordem AS VARCHAR), @ID_etapa); --
+    PRINT 'Localidade adicionada ao percurso.';
+END;
+GO
 -- 18)
 -- 19)
 -- 20)
