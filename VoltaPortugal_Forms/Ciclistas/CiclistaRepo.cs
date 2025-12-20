@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Data;
 
 namespace VoltaPortugal_Forms.Ciclistas
 {
@@ -179,9 +180,18 @@ namespace VoltaPortugal_Forms.Ciclistas
 
         }
 
-        public void DeleteCiclista(Ciclista ciclista)
+        public bool DeleteCiclista(int UciId)
         {
+            using(SqlConnection conn = new SqlConnection(Global.ConnectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("Volta_Portugal.sp_ApagarCiclista", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@UCI_ID_Ciclista", UciId);
 
+                int rowsAffected = cmd.ExecuteNonQuery();
+                return rowsAffected > 0;
+            }
         }
     }
 }

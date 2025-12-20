@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace VoltaPortugal_Forms.Ciclistas
@@ -120,6 +121,20 @@ namespace VoltaPortugal_Forms.Ciclistas
 
             return lista;
 
+        }
+
+        public bool DeleteDD(int UciId)
+        {
+            using (SqlConnection conn = new SqlConnection(Global.ConnectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("Volta_Portugal.sp_ApagarDiretor", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@UCI_ID_Diretor", UciId);
+
+                int rowsAffected = cmd.ExecuteNonQuery();
+                return rowsAffected > 0;
+            }
         }
     }
 }

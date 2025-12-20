@@ -16,6 +16,30 @@ namespace VoltaPortugal_Forms
         public Form1()
         {
             InitializeComponent();
+
+            DataGridViewButtonColumn btnRemover = new DataGridViewButtonColumn();
+            btnRemover.Name = "Remover";
+            btnRemover.Text = "X";
+            btnRemover.HeaderText = "";
+            btnRemover.UseColumnTextForButtonValue = true; // Faz com que o "X" apareça em todos os botões
+            btnRemover.Width = 30;
+            dataGridViewCiclistas.Columns.Add(btnRemover);
+
+            DataGridViewButtonColumn btnRemoverDD = new DataGridViewButtonColumn();
+            btnRemoverDD.Name = "Remover";
+            btnRemoverDD.Text = "X";
+            btnRemoverDD.HeaderText = "";
+            btnRemoverDD.UseColumnTextForButtonValue = true; // Faz com que o "X" apareça em todos os botões
+            btnRemoverDD.Width = 30;
+            dataGridViewDD.Columns.Add(btnRemoverDD);
+
+            DataGridViewButtonColumn btnRemoverE = new DataGridViewButtonColumn();
+            btnRemoverE.Name = "Remover";
+            btnRemoverE.Text = "X";
+            btnRemoverE.HeaderText = "";
+            btnRemoverE.UseColumnTextForButtonValue = true; // Faz com que o "X" apareça em todos os botões
+            btnRemoverE.Width = 30;
+            dataGridViewEquipas.Columns.Add(btnRemoverE);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -24,6 +48,7 @@ namespace VoltaPortugal_Forms
             LoadEdition();
             ReadEquipas();
             ReadDD();
+            LoadCategorias();
         }
 
         private void ReadCiclistas()
@@ -82,6 +107,7 @@ namespace VoltaPortugal_Forms
                 row["País"] = equip.Pais;
                 row["Num Ciclistas"] = equip.num_ciclistas;
                 row["Ano Fundação"] = equip.ano_fundacao;
+                row["Categoria"] = equip.Categoria;
 
                 dataTable.Rows.Add(row);
             }
@@ -219,6 +245,95 @@ namespace VoltaPortugal_Forms
 
                 }
             }
+        }
+
+        private void btnAddEquipa_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            Adicionar_Equipas menu = new Adicionar_Equipas();
+            menu.FormClosed += (s, args) => this.Close();
+            menu.Show();
+        }
+
+        private void dataGridViewCiclistas_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if(dataGridViewCiclistas.Columns[e.ColumnIndex].Name == "Remover" && e.RowIndex >= 0)
+            {
+                int uciId = Convert.ToInt32(dataGridViewCiclistas.Rows[e.RowIndex].Cells["UCI ID"].Value);
+                string nome = dataGridViewCiclistas.Rows[e.RowIndex].Cells["Nome"].Value.ToString();
+
+                try
+                {
+                    
+                    CiclistaRepo repo = new CiclistaRepo();
+                    if (repo.DeleteCiclista(uciId))
+                    {
+                        MessageBox.Show("Ciclista removido com sucesso!");
+                        ReadCiclistas(); // Atualiza a lista
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Erro ao apagar");
+                }
+            }
+        }
+
+        private void dataGridViewDD_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dataGridViewDD.Columns[e.ColumnIndex].Name == "Remover" && e.RowIndex >= 0)
+            {
+                int uciId = Convert.ToInt32(dataGridViewDD.Rows[e.RowIndex].Cells["UCI ID"].Value);
+                string nome = dataGridViewDD.Rows[e.RowIndex].Cells["Nome"].Value.ToString();
+
+                try
+                {
+
+                    DiretorDesportivoRepo repo = new DiretorDesportivoRepo();
+                    if (repo.DeleteDD(uciId))
+                    {
+                        MessageBox.Show("Diretor removido com sucesso!");
+                        ReadDD(); // Atualiza a lista
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Erro ao apagar");
+                }
+            }
+        }
+
+        private void dataGridViewEquipas_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dataGridViewDD.Columns[e.ColumnIndex].Name == "Remover" && e.RowIndex >= 0)
+            {
+                int Id = Convert.ToInt32(dataGridViewEquipas.Rows[e.RowIndex].Cells["ID"].Value);
+                string nome = dataGridViewEquipas.Rows[e.RowIndex].Cells["Nome"].Value.ToString();
+
+                try
+                {
+
+                    EquipaRepo repo = new EquipaRepo();
+                    if (repo.DeleteEquipa(Id))
+                    {
+                        MessageBox.Show("Equipa removido com sucesso!");
+                        ReadEquipas(); // Atualiza a lista
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Erro ao apagar");
+                }
+            }
+        }
+
+        private void LoadCategorias()
+        {
+            comboBoxCatClassi.Items.Add("Geral Individual");
+            comboBoxCatClassi.Items.Add("Geral Equipas");
+            comboBoxCatClassi.Items.Add("Juventude");
+            comboBoxCatClassi.SelectedIndex = 0; // por default, Geral Individual
+
         }
     }
 }

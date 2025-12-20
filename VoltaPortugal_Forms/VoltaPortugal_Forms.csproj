@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MetroFramework">
+      <HintPath>..\..\..\.nuget\packages\metromodernui\1.4.0\lib\net\MetroFramework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,11 +49,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdicionarEquipa.cs">
+    <Compile Include="Adicionar_Equipas.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AdicionarEquipa.Designer.cs">
-      <DependentUpon>AdicionarEquipa.cs</DependentUpon>
+    <Compile Include="Adicionar_Equipas.Designer.cs">
+      <DependentUpon>Adicionar_Equipas.cs</DependentUpon>
     </Compile>
     <Compile Include="Ciclistas\Ciclista.cs" />
     <Compile Include="Ciclistas\CiclistaRepo.cs" />
@@ -74,8 +77,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="AdicionarEquipa.resx">
-      <DependentUpon>AdicionarEquipa.cs</DependentUpon>
+    <EmbeddedResource Include="Adicionar_Equipas.resx">
+      <DependentUpon>Adicionar_Equipas.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

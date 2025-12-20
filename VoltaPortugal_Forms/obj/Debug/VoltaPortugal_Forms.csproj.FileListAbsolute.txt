@@ -10,4 +10,6 @@ C:\Users\tomas\UAveiro\FBD\VoltaPortugal_Forms\obj\Debug\VoltaPortugal_Forms.exe
 C:\Users\tomas\UAveiro\FBD\VoltaPortugal_Forms\obj\Debug\VoltaPortugal_Forms.pdb
 C:\Users\tomas\UAveiro\FBD\VoltaPortugal_Forms\obj\Debug\VoltaPortugal_Forms.exe.config
 C:\Users\tomas\UAveiro\FBD\VoltaPortugal_Forms\obj\Debug\VoltaPortugal_Forms.Form1.resources
-C:\Users\tomas\UAveiro\FBD\VoltaPortugal_Forms\obj\Debug\VoltaPortugal_Forms.AdicionarEquipa.resources
+C:\Users\tomas\UAveiro\FBD\VoltaPortugal_Forms\bin\Debug\MetroFramework.dll
+C:\Users\tomas\UAveiro\FBD\VoltaPortugal_Forms\obj\Debug\VoltaPor.B4B4C7EB.Up2Date
+C:\Users\tomas\UAveiro\FBD\VoltaPortugal_Forms\obj\Debug\VoltaPortugal_Forms.Adicionar_Equipas.resources

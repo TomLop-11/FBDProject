@@ -8,14 +8,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MetroFramework.Forms;
 
 namespace VoltaPortugal_Forms
 {
-    public partial class Login : Form
+    public partial class Login : MetroForm
     {
         public Login()
         {
             InitializeComponent();
+            this.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.Style = MetroFramework.MetroColorStyle.Red;
         }
 
         
