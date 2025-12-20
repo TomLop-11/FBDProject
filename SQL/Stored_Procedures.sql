@@ -14,7 +14,7 @@ CREATE OR ALTER PROCEDURE Volta_Portugal.sp_RegistarCiclista
 AS
 BEGIN
     SET NOCOUNT ON;
-    SET XACT_ABORT ON; -- Garante rollback automático em caso de erro grave
+    SET XACT_ABORT ON; -- Garante rollback automÃ¡tico em caso de erro grave
 
     BEGIN TRANSACTION;
     BEGIN TRY
@@ -28,7 +28,7 @@ BEGIN
         INSERT INTO Volta_Portugal.Ciclista (UCI_ID, num_dorsal)
         VALUES (@NovoID, @num_dorsal);
 
-        -- 3. Associar imediatamente à Equipa (Tabela Pertence)
+        -- 3. Associar imediatamente Ã  Equipa (Tabela Pertence)
         INSERT INTO Volta_Portugal.Pertence (UCI_ID_Ciclista, ID_equipa, data_inicio, data_fim)
         VALUES (@NovoID, @ID_equipa, @data_inicio, @data_fim);
 
@@ -66,7 +66,7 @@ BEGIN
         INSERT INTO Volta_Portugal.DiretorDesportivo (UCI_ID)
         VALUES (@NovoID);
 
-        -- 3. Associar imediatamente à Equipa (Tabela Orienta)
+        -- 3. Associar imediatamente Ã  Equipa (Tabela Orienta)
         INSERT INTO Volta_Portugal.Orienta (UCI_ID_DiretorDesportivo, ID_equipa, data_inicio, data_fim)
         VALUES (@NovoID, @ID_equipa, @data_inicio, @data_fim);
 
@@ -87,22 +87,22 @@ BEGIN
     SET NOCOUNT ON;
     BEGIN TRANSACTION;
     BEGIN TRY
-        -- 1. Apagar especificações das bicicletas do ciclista
+        -- 1. Apagar especificaÃ§Ãµes das bicicletas do ciclista
         DELETE FROM Volta_Portugal.Especificacao_Bicicleta 
         WHERE Codigo_bicicleta IN (SELECT codigo FROM Volta_Portugal.Bicicleta WHERE UCI_ID_ciclista = @UCI_ID_Ciclista);
 
         -- 2. Apagar as bicicletas
         DELETE FROM Volta_Portugal.Bicicleta WHERE UCI_ID_ciclista = @UCI_ID_Ciclista;
 
-        -- 3. Apagar resultados e participações em etapas
+        -- 3. Apagar resultados e participaÃ§Ãµes em etapas
         DELETE FROM Volta_Portugal.ResultadoEtapa WHERE UCI_ID_ciclista = @UCI_ID_Ciclista;
         DELETE FROM Volta_Portugal.Participa WHERE UCI_ID_ciclista = @UCI_ID_Ciclista;
 
-        -- 4. Apagar categorias e camisolas atribuídas
+        -- 4. Apagar categorias e camisolas atribuÃ­das
         DELETE FROM Volta_Portugal.Categoria_Ciclista WHERE UCI_ID_ciclista = @UCI_ID_Ciclista;
         DELETE FROM Volta_Portugal.Camisola_Ciclista WHERE UCI_ID_ciclista = @UCI_ID_Ciclista;
 
-        -- 5. Apagar histórico de equipas (Pertence)
+        -- 5. Apagar histÃ³rico de equipas (Pertence)
         DELETE FROM Volta_Portugal.Pertence WHERE UCI_ID_Ciclista = @UCI_ID_Ciclista;
 
         -- 6. Apagar da tabela especializada Ciclista
@@ -128,7 +128,7 @@ BEGIN
     SET NOCOUNT ON;
     BEGIN TRANSACTION;
     BEGIN TRY
-        -- 1. Apagar histórico de orientação de equipas
+        -- 1. Apagar histÃ³rico de orientaÃ§Ã£o de equipas
         DELETE FROM Volta_Portugal.Orienta WHERE UCI_ID_DiretorDesportivo = @UCI_ID_Diretor;
 
         -- 2. Apagar da tabela especializada DiretorDesportivo
@@ -159,15 +159,15 @@ BEGIN
     -- Verifica se o ciclista existe na tabela especializada antes de inserir
     IF NOT EXISTS (SELECT 1 FROM Volta_Portugal.Ciclista WHERE UCI_ID = @UCI_ID_ciclista)
     BEGIN
-        RAISERROR ('Erro: O UCI_ID fornecido não pertence a um ciclista válido.', 16, 1);
+        RAISERROR ('Erro: O UCI_ID fornecido nÃ£o pertence a um ciclista vÃ¡lido.', 16, 1);
         RETURN;
     END
 
-    -- Insere os dados da bicicleta e a associação ao ciclista
+    -- Insere os dados da bicicleta e a associaÃ§Ã£o ao ciclista
     INSERT INTO Volta_Portugal.Bicicleta (codigo, marca, modelo, anofabrico, UCI_ID_ciclista)
     VALUES (@codigo, @marca, @modelo, @anofabrico, @UCI_ID_ciclista);
     
-    PRINT 'Bicicleta atribuída com sucesso ao ciclista.';
+    PRINT 'Bicicleta atribuÃ­da com sucesso ao ciclista.';
 END;
 GO
 
@@ -182,12 +182,12 @@ BEGIN
         -- 1. Verificar se a bicicleta existe antes de tentar apagar
         IF NOT EXISTS (SELECT 1 FROM Volta_Portugal.Bicicleta WHERE codigo = @codigo) --
         BEGIN
-            RAISERROR ('Erro: Não existe nenhuma bicicleta com o código fornecido.', 16, 1);
+            RAISERROR ('Erro: NÃ£o existe nenhuma bicicleta com o cÃ³digo fornecido.', 16, 1);
             ROLLBACK TRANSACTION;
             RETURN;
         END
 
-        -- 2. Remover as especificações técnicas da bicicleta primeiro
+        -- 2. Remover as especificaÃ§Ãµes tÃ©cnicas da bicicleta primeiro
         DELETE FROM Volta_Portugal.Especificacao_Bicicleta 
         WHERE Codigo_bicicleta = @codigo;
 
@@ -196,7 +196,7 @@ BEGIN
         WHERE codigo = @codigo;
 
         COMMIT TRANSACTION;
-        PRINT 'Bicicleta e as suas especificações foram removidas com sucesso.';
+        PRINT 'Bicicleta e as suas especificaÃ§Ãµes foram removidas com sucesso.';
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
@@ -205,7 +205,7 @@ BEGIN
 END;
 GO
 
--- 9) Alterar especificações de uma Bicicleta
+-- 9) Alterar especificaÃ§Ãµes de uma Bicicleta
 CREATE OR ALTER PROCEDURE Volta_Portugal.sp_AlterarEspecificacaoBicicleta
     @codigoBicicleta INT,
     @especificacaoAntiga VARCHAR(64),
@@ -214,23 +214,23 @@ AS
 BEGIN
     SET NOCOUNT ON;
     
-    -- 1. Verificar se a especificação antiga existe para essa bicicleta
+    -- 1. Verificar se a especificaÃ§Ã£o antiga existe para essa bicicleta
     IF NOT EXISTS (
         SELECT 1 
         FROM Volta_Portugal.Especificacao_Bicicleta 
         WHERE Codigo_bicicleta = @codigoBicicleta AND especificacao = @especificacaoAntiga
     )
     BEGIN
-        RAISERROR ('Erro: A especificação antiga não foi encontrada para esta bicicleta.', 16, 1);
+        RAISERROR ('Erro: A especificaÃ§Ã£o antiga nÃ£o foi encontrada para esta bicicleta.', 16, 1);
         RETURN;
     END
 
-    -- 2. Atualizar para a nova especificação
+    -- 2. Atualizar para a nova especificaÃ§Ã£o
     UPDATE Volta_Portugal.Especificacao_Bicicleta
     SET especificacao = @especificacaoNova
     WHERE Codigo_bicicleta = @codigoBicicleta AND especificacao = @especificacaoAntiga;
 
-    PRINT 'Especificação atualizada com sucesso.';
+    PRINT 'EspecificaÃ§Ã£o atualizada com sucesso.';
 END;
 GO
 
@@ -247,26 +247,26 @@ BEGIN
     -- 1. Verificar se a equipa existe
     IF NOT EXISTS (SELECT 1 FROM Volta_Portugal.Equipa WHERE ID = @ID_equipa)
     BEGIN
-        RAISERROR ('Erro: A equipa especificada não existe.', 16, 1);
+        RAISERROR ('Erro: A equipa especificada nÃ£o existe.', 16, 1);
         RETURN;
     END
 
     -- 2. Verificar se o patrocinador existe
     IF NOT EXISTS (SELECT 1 FROM Volta_Portugal.Patrocinador WHERE nome = @Nome_patrocinador)
     BEGIN
-        RAISERROR ('Erro: O patrocinador especificado não existe.', 16, 1);
+        RAISERROR ('Erro: O patrocinador especificado nÃ£o existe.', 16, 1);
         RETURN;
     END
 
-    -- 3. Inserir a relação de patrocínio
+    -- 3. Inserir a relaÃ§Ã£o de patrocÃ­nio
     INSERT INTO Volta_Portugal.Patrocina (data_inicio, data_fim, ID_equipa, Nome_patrocinador)
     VALUES (@data_inicio, @data_fim, @ID_equipa, @Nome_patrocinador);
 
-    PRINT 'Patrocinador associado à equipa com sucesso.';
+    PRINT 'Patrocinador associado Ã  equipa com sucesso.';
 END;
 GO
 
--- 11) Adicionar um Patrocinador à Competição
+-- 11) Adicionar um Patrocinador Ã  CompetiÃ§Ã£o
 CREATE OR ALTER PROCEDURE Volta_Portugal.sp_AdicionarPatrocinadorCompeticao
     @Nome_patrocinador VARCHAR(64),
     @ID_competicao INT,
@@ -276,25 +276,25 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- 1. Verificar se a competição existe
+    -- 1. Verificar se a competiÃ§Ã£o existe
     IF NOT EXISTS (SELECT 1 FROM Volta_Portugal.Competicao WHERE ID = @ID_competicao)
     BEGIN
-        RAISERROR ('Erro: A competição especificada não existe.', 16, 1);
+        RAISERROR ('Erro: A competiÃ§Ã£o especificada nÃ£o existe.', 16, 1);
         RETURN;
     END
 
     -- 2. Verificar se o patrocinador existe
     IF NOT EXISTS (SELECT 1 FROM Volta_Portugal.Patrocinador WHERE nome = @Nome_patrocinador)
     BEGIN
-        RAISERROR ('Erro: O patrocinador especificado não existe.', 16, 1);
+        RAISERROR ('Erro: O patrocinador especificado nÃ£o existe.', 16, 1);
         RETURN;
     END
 
-    -- 3. Inserir a relação de patrocínio da competição
+    -- 3. Inserir a relaÃ§Ã£o de patrocÃ­nio da competiÃ§Ã£o
     INSERT INTO Volta_Portugal.E_Patrocinado (data_inicio, data_fim, ID_competicao, Nome_patrocinador)
     VALUES (@data_inicio, @data_fim, @ID_competicao, @Nome_patrocinador);
 
-    PRINT 'Patrocinador associado à competição com sucesso.';
+    PRINT 'Patrocinador associado Ã  competiÃ§Ã£o com sucesso.';
 END;
 GO
 
@@ -306,18 +306,18 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- 1. Verificar se a associação existe antes de tentar remover
+    -- 1. Verificar se a associaÃ§Ã£o existe antes de tentar remover
     IF NOT EXISTS (
         SELECT 1 
         FROM Volta_Portugal.Patrocina 
         WHERE ID_equipa = @ID_equipa AND Nome_patrocinador = @Nome_patrocinador
     )
     BEGIN
-        RAISERROR ('Erro: Esta associação de patrocínio não existe.', 16, 1);
+        RAISERROR ('Erro: Esta associaÃ§Ã£o de patrocÃ­nio nÃ£o existe.', 16, 1);
         RETURN;
     END
 
-    -- 2. Remover a associação
+    -- 2. Remover a associaÃ§Ã£o
     DELETE FROM Volta_Portugal.Patrocina 
     WHERE ID_equipa = @ID_equipa AND Nome_patrocinador = @Nome_patrocinador;
 
@@ -325,7 +325,7 @@ BEGIN
 END;
 GO
 
--- 13) Remover Patrocinador da Competição
+-- 13) Remover Patrocinador da CompetiÃ§Ã£o
 CREATE OR ALTER PROCEDURE Volta_Portugal.sp_RemoverPatrocinadorCompeticao
     @Nome_patrocinador VARCHAR(64),
     @ID_competicao INT
@@ -333,22 +333,22 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- 1. Verificar se a associação existe
+    -- 1. Verificar se a associaÃ§Ã£o existe
     IF NOT EXISTS (
         SELECT 1 
         FROM Volta_Portugal.E_Patrocinado 
         WHERE ID_competicao = @ID_competicao AND Nome_patrocinador = @Nome_patrocinador
     )
     BEGIN
-        RAISERROR ('Erro: Esta associação de patrocínio à competição não existe.', 16, 1);
+        RAISERROR ('Erro: Esta associaÃ§Ã£o de patrocÃ­nio Ã  competiÃ§Ã£o nÃ£o existe.', 16, 1);
         RETURN;
     END
 
-    -- 2. Remover a associação
+    -- 2. Remover a associaÃ§Ã£o
     DELETE FROM Volta_Portugal.E_Patrocinado 
     WHERE ID_competicao = @ID_competicao AND Nome_patrocinador = @Nome_patrocinador;
 
-    PRINT 'Patrocinador removido da competição com sucesso.';
+    PRINT 'Patrocinador removido da competiÃ§Ã£o com sucesso.';
 END;
 GO
 
@@ -372,14 +372,14 @@ BEGIN
         
         DECLARE @idClass INT = SCOPE_IDENTITY();
 
-        -- 2. Inserir o resultado final ligado a essa classificação
+        -- 2. Inserir o resultado final ligado a essa classificaÃ§Ã£o
         INSERT INTO Volta_Portugal.ResultadoEtapa 
             (tempofinal, penalizacaotempo, bonificaotempo, UCI_ID_ciclista, ID_etapa, ID_classificacao)
         VALUES 
             (@tempofinal, @penalizacao, @bonificacao, @UCI_ID_ciclista, @ID_etapa, @idClass);
 
         COMMIT TRANSACTION;
-        PRINT 'Resultado e classificação registados com sucesso.';
+        PRINT 'Resultado e classificaÃ§Ã£o registados com sucesso.';
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
@@ -398,7 +398,7 @@ BEGIN
     SET NOCOUNT ON;
     BEGIN TRANSACTION;
     BEGIN TRY
-        -- 1. Encerrar o contrato atual (onde a data_fim ainda não passou)
+        -- 1. Encerrar o contrato atual (onde a data_fim ainda nÃ£o passou)
         UPDATE Volta_Portugal.Pertence 
         SET data_fim = @data_transferencia 
         WHERE UCI_ID_Ciclista = @UCI_ID_ciclista AND data_fim > @data_transferencia;
@@ -408,7 +408,7 @@ BEGIN
         VALUES (@data_transferencia, '2025-12-31', @ID_equipa_nova, @UCI_ID_ciclista);
 
         COMMIT TRANSACTION;
-        PRINT 'Transferência concluída.';
+        PRINT 'TransferÃªncia concluÃ­da.';
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
@@ -424,13 +424,13 @@ CREATE OR ALTER PROCEDURE Volta_Portugal.sp_AtribuirCamisola
 AS
 BEGIN
     SET NOCOUNT ON;
-    -- Se o ciclista já tiver essa camisola, não faz nada para evitar erro de PK
+    -- Se o ciclista jÃ¡ tiver essa camisola, nÃ£o faz nada para evitar erro de PK
     IF NOT EXISTS (SELECT 1 FROM Volta_Portugal.Camisola_Ciclista 
                    WHERE camisola = @cor_camisola AND UCI_ID_ciclista = @UCI_ID_ciclista)
     BEGIN
         INSERT INTO Volta_Portugal.Camisola_Ciclista (camisola, UCI_ID_ciclista)
         VALUES (@cor_camisola, @UCI_ID_ciclista);
-        PRINT 'Camisola atribuída.';
+        PRINT 'Camisola atribuÃ­da.';
     END
 END;
 GO
@@ -451,10 +451,150 @@ BEGIN
     PRINT 'Localidade adicionada ao percurso.';
 END;
 GO
--- 18)
--- 19)
--- 20)
--- 21)
--- 22)
+-- 18) Transferir um diretor desportivo de equipa
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_TransferirDiretor
+    @UCI_ID_diretor INT,
+    @ID_equipa_nova INT,
+    @data_transferencia DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON; -- Garante rollback automÃ¡tico em caso de erro
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- 1. Verificar se o diretor existe na tabela especializada
+        IF NOT EXISTS (SELECT 1 FROM Volta_Portugal.DiretorDesportivo WHERE UCI_ID = @UCI_ID_diretor)
+        BEGIN
+            RAISERROR ('Erro: O UCI_ID fornecido nÃ£o pertence a um Diretor Desportivo vÃ¡lido.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        -- 2. Verificar se a nova equipa existe
+        IF NOT EXISTS (SELECT 1 FROM Volta_Portugal.Equipa WHERE ID = @ID_equipa_nova)
+        BEGIN
+            RAISERROR ('Erro: A equipa de destino nÃ£o existe.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        -- 3. Encerrar o contrato/vÃ­nculo atual na tabela Orienta
+        -- Define a data de fim como a data da transferÃªncia para o registo atual
+        UPDATE Volta_Portugal.Orienta 
+        SET data_fim = @data_transferencia 
+        WHERE UCI_ID_DiretorDesportivo = @UCI_ID_diretor AND data_fim > @data_transferencia;
+
+        -- 4. Criar o novo vÃ­nculo na nova equipa
+        -- Nota: A tabela Orienta exige data_fim (NOT NULL), pelo que usamos uma data futura por defeito
+        INSERT INTO Volta_Portugal.Orienta (UCI_ID_DiretorDesportivo, ID_equipa, data_inicio, data_fim)
+        VALUES (@UCI_ID_diretor, @ID_equipa_nova, @data_transferencia, '2025-12-31');
+
+        COMMIT TRANSACTION;
+        PRINT 'TransferÃªncia do Diretor Desportivo concluÃ­da com sucesso.';
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+-- 19) Pesquisar Ciclistas
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_ProcurarCiclista
+    @nome VARCHAR(64) = NULL,
+    @UCI_ID INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT P.UCI_ID, P.nome, P.nacionalidade, P.data_nascimento, C.num_dorsal
+    FROM Volta_Portugal.Pessoa P
+    JOIN Volta_Portugal.Ciclista C ON P.UCI_ID = C.UCI_ID
+    WHERE (@UCI_ID IS NULL OR P.UCI_ID = @UCI_ID)
+      AND (@nome IS NULL OR P.nome LIKE '%' + @nome + '%');
+END;
+GO
+
+-- 20) Pesquisar Diretores Desportivos
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_ProcurarDiretor
+    @nome VARCHAR(64) = NULL,
+    @UCI_ID INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT P.UCI_ID, P.nome, P.nacionalidade, P.data_nascimento
+    FROM Volta_Portugal.Pessoa P
+    JOIN Volta_Portugal.DiretorDesportivo D ON P.UCI_ID = D.UCI_ID
+    WHERE (@UCI_ID IS NULL OR P.UCI_ID = @UCI_ID)
+      AND (@nome IS NULL OR P.nome LIKE '%' + @nome + '%');
+END;
+GO
+
+-- 21) Pesquisar Equipas
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_ProcurarEquipa
+    @nome VARCHAR(64) = NULL,
+    @ID INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT ID, nome, pais_origem, num_ciclistas, ano_fundacao
+    FROM Volta_Portugal.Equipa
+    WHERE (@ID IS NULL OR ID = @ID)
+      AND (@nome IS NULL OR nome LIKE '%' + @nome + '%');
+END;
+GO
+-- 22) Eliminar equipa
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_ApagarEquipa
+    @ID_equipa INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON; -- Garante o rollback automÃ¡tico em caso de erro fatal
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- 1. Verificar se a equipa existe antes de tentar apagar
+        IF NOT EXISTS (SELECT 1 FROM Volta_Portugal.Equipa WHERE ID = @ID_equipa)
+        BEGIN
+            RAISERROR ('Erro: NÃ£o existe nenhuma equipa com o ID fornecido.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        -- 2. Remover categorias associadas Ã  equipa (Tabela Multi-valor)
+        DELETE FROM Volta_Portugal.Categoria_Equipa 
+        WHERE ID_equipa = @ID_equipa;
+
+        -- 3. Remover histÃ³rico de patrocÃ­nios (Tabela Patrocina)
+        DELETE FROM Volta_Portugal.Patrocina 
+        WHERE ID_equipa = @ID_equipa;
+
+        -- 4. Remover ligaÃ§Ãµes com Diretores Desportivos (Tabela Orienta)
+        DELETE FROM Volta_Portugal.Orienta 
+        WHERE ID_equipa = @ID_equipa;
+
+        -- 5. Remover ligaÃ§Ãµes com Ciclistas (Tabela Pertence)
+        -- Nota: Isto dispararÃ¡ o trigger trg_AtualizarContagemCiclistas, 
+        -- mas como a equipa serÃ¡ apagada de seguida, nÃ£o hÃ¡ conflito.
+        DELETE FROM Volta_Portugal.Pertence 
+        WHERE ID_equipa = @ID_equipa;
+
+        -- 6. Finalmente, apagar o registo da equipa na tabela principal
+        DELETE FROM Volta_Portugal.Equipa 
+        WHERE ID = @ID_equipa;
+
+        COMMIT TRANSACTION;
+        PRINT 'Equipa e todas as suas associaÃ§Ãµes foram removidas com sucesso.';
+    END TRY
+    BEGIN CATCH
+        -- Em caso de erro, desfaz todas as remoÃ§Ãµes parciais
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
 -- 23)
 -- 24)
