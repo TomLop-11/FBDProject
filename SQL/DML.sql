@@ -438,7 +438,15 @@ SELECT 'Geral Equipas', ID FROM Volta_Portugal.Classificacao WHERE ID BETWEEN 96
 
 -- Categoria Juventude (IDs 112 a 123)
 INSERT INTO Volta_Portugal.Categoria_Classificacao (categoria, ID_classificacao)
-SELECT 'Juventude', ID FROM Volta_Portugal.Classificacao WHERE ID BETWEEN 112 AND 123;
+VALUES
+('Juventude', 5),   -- Yeferson Camargo (UCI_ID 27)
+('Juventude', 12),  -- Andrey André (UCI_ID 101)
+('Juventude', 21),  -- Lucas Lopes (UCI_ID 88)
+('Juventude', 38),  -- César Cisneros (UCI_ID 25)
+('Juventude', 41),  -- Jan Kino (UCI_ID 59)
+('Juventude', 46),  -- Pau Martí (UCI_ID 19)
+('Juventude', 103), -- Zac Marriage (UCI_ID 15)
+('Juventude', 105); -- Afonso Silva (UCI_ID 29)
 
 
 INSERT INTO Volta_Portugal.Patrocinador (nome, contacto) 
