@@ -15,7 +15,7 @@ BEGIN
 END;
 GO
 
--- 2) Calcular tempo de diferença do vencedor
+-- 2) Calcular tempo de diferenÃ§a do vencedor
 CREATE OR ALTER FUNCTION Volta_Portugal.fn_CalcularDiferencaVencedor (@ID_etapa INT, @UCI_ID_ciclista INT)
 RETURNS TIME
 AS
@@ -25,8 +25,8 @@ BEGIN
     DECLARE @DiferencaSegundos INT;
     DECLARE @DiferencaTIME TIME;
 
-    -- 1. Calcular o tempo total do ciclista específico em segundos
-    -- Tempo Total = (Tempo Final + Penalização) - Bonificação
+    -- 1. Calcular o tempo total do ciclista especÃ­fico em segundos
+    -- Tempo Total = (Tempo Final + PenalizaÃ§Ã£o) - BonificaÃ§Ã£o
     SELECT @TempoCiclistaSegundos = 
         DATEDIFF(SECOND, '00:00:00', tempofinal) + 
         DATEDIFF(SECOND, '00:00:00', ISNULL(penalizacaotempo, '00:00:00')) - 
@@ -34,7 +34,7 @@ BEGIN
     FROM Volta_Portugal.ResultadoEtapa
     WHERE ID_etapa = @ID_etapa AND UCI_ID_ciclista = @UCI_ID_ciclista;
 
-    -- 2. Calcular o tempo do vencedor (o mínimo tempo total daquela etapa)
+    -- 2. Calcular o tempo do vencedor (o mÃ­nimo tempo total daquela etapa)
     SELECT @TempoVencedorSegundos = MIN(
         DATEDIFF(SECOND, '00:00:00', tempofinal) + 
         DATEDIFF(SECOND, '00:00:00', ISNULL(penalizacaotempo, '00:00:00')) - 
@@ -43,7 +43,7 @@ BEGIN
     FROM Volta_Portugal.ResultadoEtapa
     WHERE ID_etapa = @ID_etapa;
 
-    -- 3. Calcular a diferença
+    -- 3. Calcular a diferenÃ§a
     SET @DiferencaSegundos = @TempoCiclistaSegundos - @TempoVencedorSegundos;
 
     -- 4. Converter segundos de volta para o formato TIME
@@ -53,7 +53,7 @@ BEGIN
 END;
 GO
 
--- 3) Formatar o ano e edição com base no id
+-- 3) Formatar o ano e ediÃ§Ã£o com base no id
 
 CREATE OR ALTER FUNCTION Volta_Portugal.fn_FormatarEdicaoCompeticao (@ID_competicao INT)
 RETURNS VARCHAR(128)
@@ -63,14 +63,22 @@ BEGIN
     DECLARE @Edicao INT;
     DECLARE @Resultado VARCHAR(128);
 
-    -- Base de cálculo: ID 1 = 2025 e 86ª Edição
+    -- Base de cÃ¡lculo: ID 1 = 2025 e 86Âª EdiÃ§Ã£o
     -- Usamos (ID - 1) para que no ID 1 o incremento seja zero.
     SET @Ano = 2025 + (@ID_competicao - 1);
     SET @Edicao = 86 + (@ID_competicao - 1);
 
-    -- Construção da string de retorno: "86ª Edição (2025)"
-    SET @Resultado = CAST(@Edicao AS VARCHAR) + 'ª Edição (' + CAST(@Ano AS VARCHAR) + ')';
+    -- ConstruÃ§Ã£o da string de retorno: "86Âª EdiÃ§Ã£o (2025)"
+    SET @Resultado = CAST(@Edicao AS VARCHAR) + 'Âª EdiÃ§Ã£o (' + CAST(@Ano AS VARCHAR) + ')';
 
     RETURN @Resultado;
 END;
 GO
+
+-- 4) idade por data
+CREATE OR ALTER FUNCTION Volta_Portugal.fn_CalcularIdadePorData (@DataNasc DATE)
+RETURNS INT
+AS
+BEGIN
+    RETURN DATEDIFF(YEAR, @DataNasc, GETDATE());
+END;
