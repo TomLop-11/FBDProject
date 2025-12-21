@@ -669,6 +669,7 @@ BEGIN
         WHERE UCI_ID = @UCI_ID;
 
         COMMIT TRANSACTION;
+        SELECT @NovoID AS ID;
         PRINT 'Ciclista atualizado com sucesso.';
     END TRY
     BEGIN CATCH
