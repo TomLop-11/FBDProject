@@ -8,47 +8,10 @@ CREATE OR ALTER PROCEDURE Volta_Portugal.sp_RegistarCiclista
     @nacionalidade VARCHAR(64),
     @data_nascimento DATE,
     @num_dorsal INT,
-    @ID_equipa INT,
-    @data_inicio DATE,
-    @data_fim DATE = NULL -- Opcional
-AS
-BEGIN
-    SET NOCOUNT ON;
-    SET XACT_ABORT ON; -- Garante rollback automático em caso de erro grave
-
-    BEGIN TRANSACTION;
-    BEGIN TRY
-        -- 1. Inserir na tabela base Pessoa
-        INSERT INTO Volta_Portugal.Pessoa (nome, nacionalidade, data_nascimento)
-        VALUES (@nome, @nacionalidade, @data_nascimento);
-
-        DECLARE @NovoID INT = SCOPE_IDENTITY();
-
-        -- 2. Inserir na tabela especializada Ciclista
-        INSERT INTO Volta_Portugal.Ciclista (UCI_ID, num_dorsal)
-        VALUES (@NovoID, @num_dorsal);
-
-        -- 3. Associar imediatamente à Equipa (Tabela Pertence)
-        INSERT INTO Volta_Portugal.Pertence (UCI_ID_Ciclista, ID_equipa, data_inicio, data_fim)
-        VALUES (@NovoID, @ID_equipa, @data_inicio, @data_fim);
-
-        COMMIT TRANSACTION;
-    END TRY
-    BEGIN CATCH
-        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
-        THROW;
-    END CATCH
-END;
-GO
-
--- 2) Adicionar Diretor Desportivo
-CREATE OR ALTER PROCEDURE Volta_Portugal.sp_RegistarDiretor
-    @nome VARCHAR(64),
-    @nacionalidade VARCHAR(64),
-    @data_nascimento DATE,
-    @ID_equipa INT,
-    @data_inicio DATE,
-    @data_fim DATE = NULL
+    @categoria VARCHAR(64),   
+    @ID_equipa INT = NULL,       
+    @data_inicio DATE = NULL,    
+    @data_fim DATE = NULL 
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -62,15 +25,66 @@ BEGIN
 
         DECLARE @NovoID INT = SCOPE_IDENTITY();
 
-        -- 2. Inserir na tabela especializada DiretorDesportivo
+        -- 2. Inserir na tabela especializada Ciclista
+        INSERT INTO Volta_Portugal.Ciclista (UCI_ID, num_dorsal)
+        VALUES (@NovoID, @num_dorsal);
+
+        -- 3. Inserir a Categoria (Tabela de atributos do ciclista)
+        IF @categoria IS NOT NULL
+        BEGIN
+            INSERT INTO Volta_Portugal.Categoria_Ciclista (categoria, UCI_ID_ciclista)
+            VALUES (@categoria, @NovoID);
+        END
+
+        -- 4. Associar à Equipa APENAS se o ID for fornecido
+        IF @ID_equipa IS NOT NULL AND @data_inicio IS NOT NULL
+        BEGIN
+            INSERT INTO Volta_Portugal.Pertence (UCI_ID_Ciclista, ID_equipa, data_inicio, data_fim)
+            VALUES (@NovoID, @ID_equipa, @data_inicio, @data_fim);
+        END
+
+        COMMIT TRANSACTION;
+        SELECT @NovoID; -- Devolve o ID para o C#
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+-- 2) Adicionar Diretor Desportivo
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_RegistarDiretor
+    @nome VARCHAR(64),
+    @nacionalidade VARCHAR(64),
+    @data_nascimento DATE,
+    @ID_equipa INT = NULL,    
+    @data_inicio DATE = NULL, 
+    @data_fim DATE = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        INSERT INTO Volta_Portugal.Pessoa (nome, nacionalidade, data_nascimento)
+        VALUES (@nome, @nacionalidade, @data_nascimento);
+
+        DECLARE @NovoID INT = SCOPE_IDENTITY();
+
         INSERT INTO Volta_Portugal.DiretorDesportivo (UCI_ID)
         VALUES (@NovoID);
 
-        -- 3. Associar imediatamente à Equipa (Tabela Orienta)
-        INSERT INTO Volta_Portugal.Orienta (UCI_ID_DiretorDesportivo, ID_equipa, data_inicio, data_fim)
-        VALUES (@NovoID, @ID_equipa, @data_inicio, @data_fim);
+        -- Só associa à equipa (Tabela Orienta) se o ID for fornecido
+        IF @ID_equipa IS NOT NULL AND @data_inicio IS NOT NULL
+        BEGIN
+            INSERT INTO Volta_Portugal.Orienta (UCI_ID_DiretorDesportivo, ID_equipa, data_inicio, data_fim)
+            VALUES (@NovoID, @ID_equipa, @data_inicio, @data_fim);
+        END
 
         COMMIT TRANSACTION;
+        SELECT @NovoID; -- Retorna o ID para o C#
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
@@ -85,31 +99,41 @@ CREATE OR ALTER PROCEDURE Volta_Portugal.sp_ApagarCiclista
 AS
 BEGIN
     SET NOCOUNT ON;
+    SET XACT_ABORT ON; -- Garante rollback automático em erros fatais
+
     BEGIN TRANSACTION;
     BEGIN TRY
-        -- 1. Apagar especificações das bicicletas do ciclista
+        -- 1. Apagar as especificações das bicicletas associadas ao ciclista
         DELETE FROM Volta_Portugal.Especificacao_Bicicleta 
-        WHERE Codigo_bicicleta IN (SELECT codigo FROM Volta_Portugal.Bicicleta WHERE UCI_ID_ciclista = @UCI_ID_Ciclista);
+        WHERE Codigo_bicicleta IN (
+            SELECT codigo 
+            FROM Volta_Portugal.Bicicleta 
+            WHERE UCI_ID_ciclista = @UCI_ID_Ciclista
+        );
 
-        -- 2. Apagar as bicicletas
-        DELETE FROM Volta_Portugal.Bicicleta WHERE UCI_ID_ciclista = @UCI_ID_Ciclista;
+        -- 2. Apagar as bicicletas do ciclista
+        DELETE FROM Volta_Portugal.Bicicleta 
+        WHERE UCI_ID_ciclista = @UCI_ID_Ciclista;
 
-        -- 3. Apagar resultados e participações em etapas
+        -- 3. Apagar o histórico de resultados e participações em etapas
         DELETE FROM Volta_Portugal.ResultadoEtapa WHERE UCI_ID_ciclista = @UCI_ID_Ciclista;
         DELETE FROM Volta_Portugal.Participa WHERE UCI_ID_ciclista = @UCI_ID_Ciclista;
 
-        -- 4. Apagar categorias e camisolas atribuídas
+        -- 4. Apagar atributos multi-valor (Categorias e Camisolas)
         DELETE FROM Volta_Portugal.Categoria_Ciclista WHERE UCI_ID_ciclista = @UCI_ID_Ciclista;
         DELETE FROM Volta_Portugal.Camisola_Ciclista WHERE UCI_ID_ciclista = @UCI_ID_Ciclista;
 
-        -- 5. Apagar histórico de equipas (Pertence)
+        -- 5. Apagar o histórico de equipas (Tabela Pertence)
         DELETE FROM Volta_Portugal.Pertence WHERE UCI_ID_Ciclista = @UCI_ID_Ciclista;
 
         -- 6. Apagar da tabela especializada Ciclista
         DELETE FROM Volta_Portugal.Ciclista WHERE UCI_ID = @UCI_ID_Ciclista;
 
-        -- 7. Finalmente, apagar da tabela base Pessoa
-        DELETE FROM Volta_Portugal.Pessoa WHERE UCI_ID = @UCI_ID_Ciclista;
+        -- 7. Apagar da tabela base Pessoa
+        IF NOT EXISTS (SELECT 1 FROM Volta_Portugal.DiretorDesportivo WHERE UCI_ID = @UCI_ID_Ciclista)
+        BEGIN
+            DELETE FROM Volta_Portugal.Pessoa WHERE UCI_ID = @UCI_ID_Ciclista;
+        END
 
         COMMIT TRANSACTION;
     END TRY
@@ -633,6 +657,7 @@ BEGIN
         END
 
         COMMIT TRANSACTION;
+        SELECT @NovoID AS ID;
         PRINT 'Equipa registada com sucesso.';
     END TRY
     BEGIN CATCH
