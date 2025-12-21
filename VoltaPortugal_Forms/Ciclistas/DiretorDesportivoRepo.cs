@@ -77,41 +77,31 @@ namespace VoltaPortugal_Forms.Ciclistas
                 using (SqlConnection connection = new SqlConnection(connectionGlobal))
                 {
                     connection.Open();
-                    string sql = @"
-                SELECT 
-                    D.UCI_ID,            -- Index 0
-                    P.nome,              -- Index 2
-                    P.nacionalidade,     -- Index 3
-                    P.data_nascimento    -- Index 4
-                FROM Volta_Portugal.DiretorDesportivo D
-                INNER JOIN Volta_Portugal.Pessoa P ON D.UCI_ID = P.UCI_ID
-                WHERE P.nome LIKE @nome"; // completar com view ou join
-                    using (SqlCommand cmd = new SqlCommand(sql, connection))
+                    SqlCommand cmd = new SqlCommand("Volta_Portugal.sp_ProcurarDiretor", connection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@nome", "%" + nome + "%");
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        cmd.Parameters.AddWithValue("@nome", "%" + nome + "%");
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            DiretorDesportivo dd = new DiretorDesportivo();
+                            // verificar Null
+                            dd.UciId = reader.GetInt32(0);
+                            dd.Nome = reader.GetString(1);
+                            dd.Nacionalidade = reader.GetString(2);
+                            if (reader.IsDBNull(3))
                             {
-                                DiretorDesportivo dd = new DiretorDesportivo();
-                                // verificar Null
-                                dd.UciId = reader.GetInt32(0);
-                                dd.Nome = reader.GetString(1);
-                                dd.Nacionalidade = reader.GetString(2);
-                                if (reader.IsDBNull(3))
-                                {
-                                    dd.DataNascimento = null;
-                                }
-                                else
-                                {
-                                    dd.DataNascimento = reader.GetDateTime(3);
-                                }
-
-                                lista.Add(dd);
+                                dd.DataNascimento = null;
                             }
+                            else
+                            {
+                                dd.DataNascimento = reader.GetDateTime(3);
+                            }
+
+                            lista.Add(dd);
                         }
                     }
-
+                        
                 }
             }
             catch (Exception ex)

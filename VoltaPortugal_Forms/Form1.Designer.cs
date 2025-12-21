@@ -47,18 +47,18 @@
             this.btnEditDD = new System.Windows.Forms.Button();
             this.dataGridViewDD = new System.Windows.Forms.DataGridView();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.label7 = new System.Windows.Forms.Label();
+            this.comboBoxCatClassi = new MetroFramework.Controls.MetroComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textBoxsearchClassi = new System.Windows.Forms.TextBox();
+            this.comboBoxEtapas = new MetroFramework.Controls.MetroComboBox();
+            this.dataGridViewClassi = new System.Windows.Forms.DataGridView();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
             this.dropdownEdição = new System.Windows.Forms.ComboBox();
-            this.dataGridViewClassi = new System.Windows.Forms.DataGridView();
-            this.comboBoxEtapas = new MetroFramework.Controls.MetroComboBox();
-            this.textBoxsearchClassi = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.comboBoxCatClassi = new MetroFramework.Controls.MetroComboBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewCiclistas)).BeginInit();
@@ -67,9 +67,9 @@
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDD)).BeginInit();
             this.tabPage4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewClassi)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewClassi)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -300,6 +300,76 @@
             this.tabPage4.Text = "Classificação";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 14);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(69, 16);
+            this.label7.TabIndex = 9;
+            this.label7.Text = "Categoria:";
+            // 
+            // comboBoxCatClassi
+            // 
+            this.comboBoxCatClassi.FormattingEnabled = true;
+            this.comboBoxCatClassi.ItemHeight = 24;
+            this.comboBoxCatClassi.Location = new System.Drawing.Point(8, 33);
+            this.comboBoxCatClassi.Name = "comboBoxCatClassi";
+            this.comboBoxCatClassi.Size = new System.Drawing.Size(147, 30);
+            this.comboBoxCatClassi.TabIndex = 8;
+            this.comboBoxCatClassi.UseSelectable = true;
+            this.comboBoxCatClassi.SelectedIndexChanged += new System.EventHandler(this.comboBoxCatClassi_SelectedIndexChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(453, 36);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(67, 16);
+            this.label6.TabIndex = 7;
+            this.label6.Text = "Pesquisa:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(211, 14);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(53, 16);
+            this.label5.TabIndex = 6;
+            this.label5.Text = "Etapas:";
+            // 
+            // textBoxsearchClassi
+            // 
+            this.textBoxsearchClassi.Location = new System.Drawing.Point(526, 33);
+            this.textBoxsearchClassi.Name = "textBoxsearchClassi";
+            this.textBoxsearchClassi.Size = new System.Drawing.Size(234, 22);
+            this.textBoxsearchClassi.TabIndex = 5;
+            // 
+            // comboBoxEtapas
+            // 
+            this.comboBoxEtapas.FormattingEnabled = true;
+            this.comboBoxEtapas.ItemHeight = 24;
+            this.comboBoxEtapas.Location = new System.Drawing.Point(214, 33);
+            this.comboBoxEtapas.Name = "comboBoxEtapas";
+            this.comboBoxEtapas.Size = new System.Drawing.Size(181, 30);
+            this.comboBoxEtapas.TabIndex = 4;
+            this.comboBoxEtapas.UseSelectable = true;
+            this.comboBoxEtapas.SelectedIndexChanged += new System.EventHandler(this.comboBoxEtapas_SelectedIndexChanged);
+            // 
+            // dataGridViewClassi
+            // 
+            this.dataGridViewClassi.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridViewClassi.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridViewClassi.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewClassi.Location = new System.Drawing.Point(6, 84);
+            this.dataGridViewClassi.Name = "dataGridViewClassi";
+            this.dataGridViewClassi.RowHeadersWidth = 51;
+            this.dataGridViewClassi.RowTemplate.Height = 24;
+            this.dataGridViewClassi.Size = new System.Drawing.Size(754, 348);
+            this.dataGridViewClassi.TabIndex = 2;
+            // 
             // tabPage5
             // 
             this.tabPage5.Location = new System.Drawing.Point(4, 25);
@@ -348,73 +418,7 @@
             this.dropdownEdição.Name = "dropdownEdição";
             this.dropdownEdição.Size = new System.Drawing.Size(156, 24);
             this.dropdownEdição.TabIndex = 0;
-            // 
-            // dataGridViewClassi
-            // 
-            this.dataGridViewClassi.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGridViewClassi.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewClassi.Location = new System.Drawing.Point(6, 84);
-            this.dataGridViewClassi.Name = "dataGridViewClassi";
-            this.dataGridViewClassi.RowHeadersWidth = 51;
-            this.dataGridViewClassi.RowTemplate.Height = 24;
-            this.dataGridViewClassi.Size = new System.Drawing.Size(754, 348);
-            this.dataGridViewClassi.TabIndex = 2;
-            // 
-            // comboBoxEtapas
-            // 
-            this.comboBoxEtapas.FormattingEnabled = true;
-            this.comboBoxEtapas.ItemHeight = 24;
-            this.comboBoxEtapas.Location = new System.Drawing.Point(214, 33);
-            this.comboBoxEtapas.Name = "comboBoxEtapas";
-            this.comboBoxEtapas.Size = new System.Drawing.Size(181, 30);
-            this.comboBoxEtapas.TabIndex = 4;
-            this.comboBoxEtapas.UseSelectable = true;
-            // 
-            // textBoxsearchClassi
-            // 
-            this.textBoxsearchClassi.Location = new System.Drawing.Point(526, 33);
-            this.textBoxsearchClassi.Name = "textBoxsearchClassi";
-            this.textBoxsearchClassi.Size = new System.Drawing.Size(234, 22);
-            this.textBoxsearchClassi.TabIndex = 5;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(211, 14);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(53, 16);
-            this.label5.TabIndex = 6;
-            this.label5.Text = "Etapas:";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(453, 36);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(67, 16);
-            this.label6.TabIndex = 7;
-            this.label6.Text = "Pesquisa:";
-            // 
-            // comboBoxCatClassi
-            // 
-            this.comboBoxCatClassi.FormattingEnabled = true;
-            this.comboBoxCatClassi.ItemHeight = 24;
-            this.comboBoxCatClassi.Location = new System.Drawing.Point(8, 33);
-            this.comboBoxCatClassi.Name = "comboBoxCatClassi";
-            this.comboBoxCatClassi.Size = new System.Drawing.Size(147, 30);
-            this.comboBoxCatClassi.TabIndex = 8;
-            this.comboBoxCatClassi.UseSelectable = true;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 14);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(69, 16);
-            this.label7.TabIndex = 9;
-            this.label7.Text = "Categoria:";
+            this.dropdownEdição.SelectedIndexChanged += new System.EventHandler(this.dropdownEdição_SelectedIndexChanged);
             // 
             // Form1
             // 
@@ -438,10 +442,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDD)).EndInit();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewClassi)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewClassi)).EndInit();
             this.ResumeLayout(false);
 
         }

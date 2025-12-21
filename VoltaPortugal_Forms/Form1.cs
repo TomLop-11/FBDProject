@@ -49,6 +49,7 @@ namespace VoltaPortugal_Forms
             ReadEquipas();
             ReadDD();
             LoadCategorias();
+            LoadClassificacao();
         }
 
         private void ReadCiclistas()
@@ -146,6 +147,11 @@ namespace VoltaPortugal_Forms
         {
             CompeticaoRepo cr = new CompeticaoRepo();
             dropdownEdição.DataSource = cr.GetEdicao();
+            dropdownEdição.DisplayMember = "nome"; 
+            dropdownEdição.ValueMember = "id"; 
+
+            
+
         }
 
         private void searchCiclista_KeyDown(object sender, KeyEventArgs e)
@@ -334,6 +340,63 @@ namespace VoltaPortugal_Forms
             comboBoxCatClassi.Items.Add("Juventude");
             comboBoxCatClassi.SelectedIndex = 0; // por default, Geral Individual
 
+        }
+
+        private void LoadClassificacao()
+        {
+            if(comboBoxEtapas.SelectedValue is int idEtapa && comboBoxCatClassi.SelectedItem != null)
+            {
+                Classificação classi = new Classificação();
+
+                string categoria = comboBoxCatClassi.SelectedItem.ToString();
+
+                dataGridViewClassi.DataSource = classi.GetClassificacao(idEtapa, categoria);
+            }
+        }
+
+        private void dropdownEdição_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (dropdownEdição.SelectedValue is int compId)
+            {
+                CompeticaoRepo repo = new CompeticaoRepo();
+                var etapas = repo.GetEtapas(compId);
+
+                var lista = new List<Object>();
+                string label = "";
+
+                lista.Add(new { ID = -1, Texto = "Total - Todas as Etapas" });
+                foreach (var item in etapas)
+                {
+                    if (item.num_etapa == 0 )
+                    {
+                        label = "Prólogo";
+                       
+
+                    }
+                    else
+                    {
+                        label = "Etapa " + item.num_etapa;
+                        
+                    }
+                    lista.Add(new { ID = item.id, Texto = label });
+                }
+
+                
+
+                comboBoxEtapas.DisplayMember = "Texto";
+                comboBoxEtapas.ValueMember = "ID";
+                comboBoxEtapas.DataSource = lista;
+            }
+        }
+
+        private void comboBoxCatClassi_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LoadClassificacao();
+        }
+
+        private void comboBoxEtapas_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LoadClassificacao();
         }
     }
 }

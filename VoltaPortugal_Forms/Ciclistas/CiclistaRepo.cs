@@ -74,44 +74,33 @@ namespace VoltaPortugal_Forms.Ciclistas
                 using (SqlConnection connection = new SqlConnection(connectionGlobal))
                 {
                     connection.Open();
-                    string sql = @"
-                SELECT 
-                    C.UCI_ID,            -- Index 0
-                    C.num_dorsal,        -- Index 1
-                    P.nome,              -- Index 2
-                    P.nacionalidade,     -- Index 3
-                    P.data_nascimento    -- Index 4
-                FROM Volta_Portugal.Ciclista C
-                INNER JOIN Volta_Portugal.Pessoa P ON C.UCI_ID = P.UCI_ID
-                WHERE P.nome LIKE @nome"; // completar com view ou join
-                    using (SqlCommand cmd = new SqlCommand(sql, connection))
+                    SqlCommand cmd = new SqlCommand("Volta_Portugal.sp_ProcurarCiclista", connection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                   
+                    cmd.Parameters.AddWithValue("@nome","%" + nome + "%");
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        cmd.Parameters.AddWithValue("@nome","%" + nome + "%");
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            Ciclista ciclista = new Ciclista();
+                            // verificar Null
+                            ciclista.UciId = reader.GetInt32(0);
+                            ciclista.NumDorsal = reader.GetInt32(4);
+                            ciclista.Nome = reader.GetString(1);
+                            ciclista.Nacionalidade = reader.GetString(2);
+
+                            if (reader.IsDBNull(3))
                             {
-                                Ciclista ciclista = new Ciclista();
-                                // verificar Null
-                                ciclista.UciId = reader.GetInt32(0);
-                                ciclista.NumDorsal = reader.GetInt32(1);
-                                ciclista.Nome = reader.GetString(2);
-                                ciclista.Nacionalidade = reader.GetString(3);
-
-                                if (reader.IsDBNull(4))
-                                {
-                                    ciclista.DataNascimento = null;
-                                }
-                                else
-                                {
-                                    ciclista.DataNascimento = reader.GetDateTime(4);
-                                }
-
-                                lista.Add(ciclista);
+                                ciclista.DataNascimento = null;
                             }
+                            else
+                            {
+                                ciclista.DataNascimento = reader.GetDateTime(3);
+                            }
+
+                            lista.Add(ciclista);
                         }
                     }
-
                 }
             }
             catch (Exception ex)

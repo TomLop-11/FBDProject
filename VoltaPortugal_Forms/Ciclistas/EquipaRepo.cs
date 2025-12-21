@@ -63,30 +63,25 @@ namespace VoltaPortugal_Forms.Ciclistas
                 using (SqlConnection connection = new SqlConnection(connectionGlobal))
                 {
                     connection.Open();
-                    string sql = @"
-                SELECT ID, pais_origem, num_ciclistas, nome, ano_fundacao
-                FROM Volta_Portugal.Equipa
-                WHERE nome LIKE @nome"; // completar com view ou join
-                    using (SqlCommand cmd = new SqlCommand(sql, connection))
-                    {
-                        cmd.Parameters.AddWithValue("@nome", "%" + nome + "%");
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                Equipa equipa = new Equipa();
-                                // verificar Null
-                                equipa.Id = reader.GetInt32(0);
-                                equipa.Nome = reader.GetString(3);
-                                equipa.num_ciclistas = reader.GetInt32(2);
-                                equipa.Pais = reader.IsDBNull(1) ? "N/A" : reader.GetString(1);
-                                equipa.ano_fundacao = reader.IsDBNull(4) ? 0 : reader.GetInt32(4);
 
-                                lista.Add(equipa);
-                            }
+                    SqlCommand cmd = new SqlCommand("Volta_Portugal.sp_ProcurarEquipa", connection);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@nome", "%" + nome + "%");
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Equipa equipa = new Equipa();
+                            // verificar Null
+                            equipa.Id = reader.GetInt32(0);
+                            equipa.Nome = reader.GetString(1);
+                            equipa.num_ciclistas = reader.GetInt32(3);
+                            equipa.Pais = reader.IsDBNull(2) ? "N/A" : reader.GetString(2);
+                            equipa.ano_fundacao = reader.IsDBNull(4) ? 0 : reader.GetInt32(4);
+
+                            lista.Add(equipa);
                         }
                     }
-
                 }
             }
             catch (Exception ex)

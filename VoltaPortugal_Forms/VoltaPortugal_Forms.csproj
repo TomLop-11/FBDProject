@@ -57,11 +57,14 @@
     </Compile>
     <Compile Include="Ciclistas\Ciclista.cs" />
     <Compile Include="Ciclistas\CiclistaRepo.cs" />
+    <Compile Include="Ciclistas\Classificação.cs" />
     <Compile Include="Ciclistas\CompeticaoRepo.cs" />
+    <Compile Include="Ciclistas\Competição.cs" />
     <Compile Include="Ciclistas\DiretorDesportivo.cs" />
     <Compile Include="Ciclistas\DiretorDesportivoRepo.cs" />
     <Compile Include="Ciclistas\Equipa.cs" />
     <Compile Include="Ciclistas\EquipaRepo.cs" />
+    <Compile Include="Ciclistas\Etapa.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
