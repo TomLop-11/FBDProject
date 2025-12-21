@@ -67,3 +67,16 @@ SELECT
     Volta_Portugal.fn_FormatarEdicaoCompeticao(ID) AS Edicao_Formatada,
     organizador
 FROM Volta_Portugal.Competicao;
+
+-- 5) View para Marcas
+CREATE OR ALTER VIEW Volta_Portugal.vw_ListaBicicletaMarcas AS
+SELECT DISTINCT marca 
+FROM Volta_Portugal.Bicicleta;
+GO
+
+-- 6) View para Modelos
+CREATE OR ALTER VIEW Volta_Portugal.vw_ListaBicicletaModelos AS
+SELECT DISTINCT modelo 
+FROM Volta_Portugal.Bicicleta;
+GO
+
