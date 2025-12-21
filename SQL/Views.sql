@@ -26,14 +26,19 @@ GO
 
 -- 2) Lista de todas as equipas
 
+GO
 CREATE OR ALTER VIEW Volta_Portugal.vw_ListaEquipas AS
 SELECT 
-    ID, 
-    nome AS Nome_Equipa, 
-    pais_origem AS Pais, 
-    ano_fundacao AS Ano_Fundacao, 
-    num_ciclistas AS Total_Ciclistas
-FROM Volta_Portugal.Equipa;
+    E.ID, 
+    E.nome AS Nome_Equipa, 
+    E.pais_origem AS Pais, 
+    E.ano_fundacao AS Ano_Fundacao, 
+    E.num_ciclistas AS Total_Ciclistas,
+    -- Atributo extraído da tabela multi-valor
+    CE.categoria AS Categoria
+FROM Volta_Portugal.Equipa E
+-- Ligação às categorias (LEFT JOIN para incluir equipas que possam ainda não ter categoria)
+LEFT JOIN Volta_Portugal.Categoria_Equipa CE ON E.ID = CE.ID_equipa;
 GO
 -- 3) Lista de todos os diretores desportivos
 
@@ -53,3 +58,12 @@ LEFT JOIN Volta_Portugal.Orienta O ON DD.UCI_ID = O.UCI_ID_DiretorDesportivo
 -- Junção com Equipa para obter o nome da mesma
 LEFT JOIN Volta_Portugal.Equipa E ON O.ID_equipa = E.ID;
 GO
+
+-- 4) Mostrar o ano e edição de uma competição
+CREATE OR ALTER VIEW Volta_Portugal.vw_DetalhesCompeticao AS
+SELECT 
+    ID,
+    nome AS Nome_Original,
+    Volta_Portugal.fn_FormatarEdicaoCompeticao(ID) AS Edicao_Formatada,
+    organizador
+FROM Volta_Portugal.Competicao;

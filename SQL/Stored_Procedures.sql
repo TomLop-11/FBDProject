@@ -596,5 +596,142 @@ BEGIN
     END CATCH
 END;
 GO
--- 23)
--- 24)
+
+-- 23) Adicionar Equipa
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_RegistarEquipa
+    @nome VARCHAR(64),
+    @pais_origem VARCHAR(64),
+    @ano_fundacao INT,
+    @categoria VARCHAR(64) = NULL -- Opcional
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- 1. Verificar se já existe uma equipa com esse nome (Unique Constraint)
+        IF EXISTS (SELECT 1 FROM Volta_Portugal.Equipa WHERE nome = @nome)
+        BEGIN
+            RAISERROR ('Erro: Já existe uma equipa registada com esse nome.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        -- 2. Inserir na tabela Equipa
+        -- O campo num_ciclistas inicia a 0 (será atualizado via trigger ao adicionar ciclistas)
+        INSERT INTO Volta_Portugal.Equipa (nome, pais_origem, ano_fundacao, num_ciclistas)
+        VALUES (@nome, @pais_origem, @ano_fundacao, 0);
+
+        DECLARE @NovoID INT = SCOPE_IDENTITY();
+
+        -- 3. Inserir a categoria inicial, se fornecida (Atributo Multi-valor)
+        IF @categoria IS NOT NULL
+        BEGIN
+            INSERT INTO Volta_Portugal.Categoria_Equipa (ID_equipa, categoria)
+            VALUES (@NovoID, @categoria);
+        END
+
+        COMMIT TRANSACTION;
+        PRINT 'Equipa registada com sucesso.';
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+-- 24) Editar um Ciclista
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_EditarCiclista
+    @UCI_ID INT,
+    @nome VARCHAR(64),
+    @nacionalidade VARCHAR(64),
+    @data_nascimento DATE,
+    @num_dorsal INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- 1. Atualizar dados na tabela base Pessoa
+        UPDATE Volta_Portugal.Pessoa
+        SET nome = @nome,
+            nacionalidade = @nacionalidade,
+            data_nascimento = @data_nascimento
+        WHERE UCI_ID = @UCI_ID;
+
+        -- 2. Atualizar dados específicos na tabela Ciclista
+        UPDATE Volta_Portugal.Ciclista
+        SET num_dorsal = @num_dorsal
+        WHERE UCI_ID = @UCI_ID;
+
+        COMMIT TRANSACTION;
+        PRINT 'Ciclista atualizado com sucesso.';
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+-- 25) Editar um Diretor Desportivo
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_EditarDiretor
+    @UCI_ID INT,
+    @nome VARCHAR(64),
+    @nacionalidade VARCHAR(64),
+    @data_nascimento DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    BEGIN TRY
+        -- Atualizar dados na tabela Pessoa
+        UPDATE Volta_Portugal.Pessoa
+        SET nome = @nome,
+            nacionalidade = @nacionalidade,
+            data_nascimento = @data_nascimento
+        WHERE UCI_ID = @UCI_ID;
+
+        PRINT 'Diretor Desportivo atualizado com sucesso.';
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;
+GO
+
+-- 26) Editar uma Equipa
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_EditarEquipa
+    @ID_equipa INT,
+    @nome VARCHAR(64),
+    @pais_origem VARCHAR(64),
+    @ano_fundacao INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        -- Verificar se o novo nome já existe noutra equipa (Unique Constraint)
+        IF EXISTS (SELECT 1 FROM Volta_Portugal.Equipa WHERE nome = @nome AND ID <> @ID_equipa)
+        BEGIN
+            RAISERROR ('Erro: Já existe outra equipa com esse nome.', 16, 1);
+            RETURN;
+        END
+
+        UPDATE Volta_Portugal.Equipa
+        SET nome = @nome,
+            pais_origem = @pais_origem,
+            ano_fundacao = @ano_fundacao
+        WHERE ID = @ID_equipa;
+
+        PRINT 'Equipa atualizada com sucesso.';
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;
+GO
