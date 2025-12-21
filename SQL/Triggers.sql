@@ -4,13 +4,11 @@
 -- 1) Atualizar o número de ciclistas de uma equipa
 GO
 CREATE OR ALTER TRIGGER Volta_Portugal.trg_AtualizarContagemCiclistas
-ON Volta_Portugal.Pertence 
+ON Volta_Portugal.Pertence  
 AFTER INSERT, UPDATE, DELETE
 AS
 BEGIN
     SET NOCOUNT ON;
-
-    -- Atualiza o campo num_ciclistas na tabela Equipa
     UPDATE E
     SET E.num_ciclistas = (
         SELECT COUNT(*) 
