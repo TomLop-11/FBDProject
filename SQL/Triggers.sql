@@ -1,36 +1,32 @@
 ------------------------------------------------------------
 -- TRIGGERS
 ------------------------------------------------------------
--- 1) Atualizar o número de ciclistas de uma equipa
+-- 1) Atualizar o nÃºmero de ciclistas de uma equipa
 GO
 CREATE OR ALTER TRIGGER Volta_Portugal.trg_AtualizarContagemCiclistas
-ON Volta_Portugal.Pertence
-AFTER INSERT, DELETE
+ON Volta_Portugal.Pertence 
+AFTER INSERT, UPDATE, DELETE
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Se um ciclista foi ADICIONADO
-    IF EXISTS (SELECT * FROM inserted)
-    BEGIN
-        UPDATE E
-        SET E.num_ciclistas = E.num_ciclistas + (SELECT COUNT(*) FROM inserted I WHERE I.ID_equipa = E.ID)
-        FROM Volta_Portugal.Equipa E
-        JOIN inserted I ON E.ID = I.ID_equipa;
-    END
-
-    -- Se um ciclista foi REMOVIDO
-    IF EXISTS (SELECT * FROM deleted)
-    BEGIN
-        UPDATE E
-        SET E.num_ciclistas = E.num_ciclistas - (SELECT COUNT(*) FROM deleted D WHERE D.ID_equipa = E.ID)
-        FROM Volta_Portugal.Equipa E
-        JOIN deleted D ON E.ID = D.ID_equipa;
-    END
+    -- Atualiza o campo num_ciclistas na tabela Equipa
+    UPDATE E
+    SET E.num_ciclistas = (
+        SELECT COUNT(*) 
+        FROM Volta_Portugal.Pertence P 
+        WHERE P.ID_equipa = E.ID
+    )
+    FROM Volta_Portugal.Equipa E
+    WHERE E.ID IN (
+        SELECT ID_equipa FROM inserted 
+        UNION 
+        SELECT ID_equipa FROM deleted
+    );
 END;
 GO
 
--- 2) Atualizar o contador de etapas na competição
+-- 2) Atualizar o contador de etapas na competiÃ§Ã£o
 GO
 CREATE OR ALTER TRIGGER Volta_Portugal.trg_AtualizarContagemEtapas
 ON Volta_Portugal.Inclui
@@ -39,7 +35,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Ao adicionar uma etapa à competição
+    -- Ao adicionar uma etapa Ã  competiÃ§Ã£o
     IF EXISTS (SELECT * FROM inserted)
     BEGIN
         UPDATE C
@@ -48,7 +44,7 @@ BEGIN
         JOIN inserted I ON C.ID = I.ID_competicao;
     END
 
-    -- Ao remover uma etapa da competição
+    -- Ao remover uma etapa da competiÃ§Ã£o
     IF EXISTS (SELECT * FROM deleted)
     BEGIN
         UPDATE C
@@ -59,7 +55,7 @@ BEGIN
 END;
 GO
 
--- 3) Impedir o número de dorsal duplicado
+-- 3) Impedir o nÃºmero de dorsal duplicado
 GO
 CREATE OR ALTER TRIGGER Volta_Portugal.trg_ValidarDorsalEquipa
 ON Volta_Portugal.Pertence
@@ -77,7 +73,7 @@ BEGIN
           AND PT.data_fim >= CAST(GETDATE() AS DATE) -- Contrato ainda ativo
     )
     BEGIN
-        RAISERROR ('Erro: Já existe um ciclista com este dorsal nesta equipa.', 16, 1);
+        RAISERROR ('Erro: JÃ¡ existe um ciclista com este dorsal nesta equipa.', 16, 1);
         ROLLBACK TRANSACTION;
     END
 END;
