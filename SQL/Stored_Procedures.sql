@@ -822,3 +822,66 @@ BEGIN
     WHERE ID_equipa = @ID_equipa 
 END;
 GO
+-- 29) Obter classificações
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_ObterClassificacoes
+    @idEtapa INT,          -- -1 para Geral, ou ID específico
+    @categoria VARCHAR(64), -- 'Geral Individual', 'Juventude', etc.
+    @isTeamRanking BIT      -- 0 para Individual, 1 para Equipas
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- CASE 1: Classificação por EQUIPAS
+    IF @isTeamRanking = 1
+    BEGIN
+        SELECT 
+            RANK() OVER (ORDER BY SUM(DATEDIFF(SECOND, '00:00:00', RE.tempofinal)) ASC) AS Posicao,
+            E.nome AS Equipa,
+            CONVERT(VARCHAR, DATEADD(SECOND, SUM(DATEDIFF(SECOND, '00:00:00', RE.tempofinal)), '00:00:00'), 108) AS TempoTotal
+        FROM Volta_Portugal.ResultadoEtapa RE
+        JOIN Volta_Portugal.Pessoa P ON RE.UCI_ID_ciclista = P.UCI_ID
+        JOIN Volta_Portugal.Pertence Per ON P.UCI_ID = Per.UCI_ID_Ciclista
+        JOIN Volta_Portugal.Equipa E ON Per.ID_equipa = E.ID
+        JOIN Volta_Portugal.Categoria_Classificacao CC ON RE.ID_classificacao = CC.ID_classificacao
+        WHERE CC.categoria = @categoria
+          AND (@idEtapa = -1 OR RE.ID_etapa = @idEtapa) -- Filtra etapa se não for -1
+        GROUP BY E.nome;
+    END
+
+    -- CASE 2: Classificação INDIVIDUAL GERAL (Todas as etapas)
+    ELSE IF @idEtapa = -1
+    BEGIN
+        SELECT 
+            RANK() OVER (ORDER BY SUM(DATEDIFF(SECOND, '00:00:00', RE.tempofinal)) ASC) AS Posicao,
+            P.nome AS Ciclista,
+            E.nome AS Equipa,
+            CONVERT(VARCHAR, DATEADD(SECOND, SUM(DATEDIFF(SECOND, '00:00:00', RE.tempofinal)), '00:00:00'), 108) AS TempoTotal
+        FROM Volta_Portugal.ResultadoEtapa RE
+        JOIN Volta_Portugal.Pessoa P ON RE.UCI_ID_ciclista = P.UCI_ID
+        JOIN Volta_Portugal.Pertence Per ON P.UCI_ID = Per.UCI_ID_Ciclista
+        JOIN Volta_Portugal.Equipa E ON Per.ID_equipa = E.ID
+        JOIN Volta_Portugal.Categoria_Classificacao CC ON RE.ID_classificacao = CC.ID_classificacao
+        WHERE CC.categoria = @categoria
+        GROUP BY P.nome, E.nome;
+    END
+
+    -- CASE 3: Classificação INDIVIDUAL POR ETAPA
+    ELSE
+    BEGIN
+        SELECT 
+            C.posicao AS Posicao,
+            P.nome AS Ciclista,
+            E.nome AS Equipa,
+            CONVERT(VARCHAR, RE.tempofinal, 108) AS Tempo
+        FROM Volta_Portugal.ResultadoEtapa RE
+        JOIN Volta_Portugal.Classificacao C ON RE.ID_classificacao = C.ID
+        JOIN Volta_Portugal.Categoria_Classificacao CC ON C.ID = CC.ID_classificacao
+        JOIN Volta_Portugal.Pessoa P ON RE.UCI_ID_ciclista = P.UCI_ID
+        JOIN Volta_Portugal.Pertence Per ON P.UCI_ID = Per.UCI_ID_Ciclista
+        JOIN Volta_Portugal.Equipa E ON Per.ID_equipa = E.ID
+        WHERE RE.ID_etapa = @idEtapa 
+          AND CC.categoria = @categoria
+        ORDER BY C.posicao ASC;
+    END
+END
+GO
