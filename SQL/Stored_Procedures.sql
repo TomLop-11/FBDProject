@@ -885,3 +885,38 @@ BEGIN
     END
 END
 GO
+-- 30) Buscar Patrocinadores
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_GetPatrocinadores
+    @ID_competicao INT = NULL -- Parâmetro opcional
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @ID_competicao IS NULL
+    BEGIN
+        -- Caso não seja passada uma competição, retorna TODOS os patrocinadores 
+        -- da tabela principal (evita que fiquem a faltar patrocinadores)
+        SELECT 
+            'Todas' AS Nome_Competicao,
+            P.nome AS Nome_Patrocinador,
+            P.contacto AS Contacto,
+            NULL AS Inicio_Patrocinio,
+            NULL AS Fim_Patrocinio
+        FROM Volta_Portugal.Patrocinador P;
+    END
+    ELSE
+    BEGIN
+        -- Caso seja passada uma competição, retorna apenas os vinculados
+        SELECT 
+            C.nome AS Nome_Competicao,
+            P.nome AS Nome_Patrocinador,
+            P.contacto AS Contacto,
+            EP.data_inicio AS Inicio_Patrocinio,
+            EP.data_fim AS Fim_Patrocinio
+        FROM Volta_Portugal.Competicao C
+        INNER JOIN Volta_Portugal.E_Patrocinado EP ON C.ID = EP.ID_competicao
+        INNER JOIN Volta_Portugal.Patrocinador P ON EP.Nome_patrocinador = P.nome
+        WHERE C.ID = @ID_competicao;
+    END
+END
+GO
