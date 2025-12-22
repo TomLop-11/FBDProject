@@ -740,16 +740,20 @@ CREATE OR ALTER PROCEDURE Volta_Portugal.sp_EditarEquipa
     @ID_equipa INT,
     @nome VARCHAR(64),
     @pais_origem VARCHAR(64),
-    @ano_fundacao INT
+    @ano_fundacao INT,
+    @categoria VARCHAR(64)
 AS
 BEGIN
     SET NOCOUNT ON;
+    SET XACT_ABORT ON;
 
+    BEGIN TRANSACTION;
     BEGIN TRY
         -- Verificar se o novo nome já existe noutra equipa (Unique Constraint)
         IF EXISTS (SELECT 1 FROM Volta_Portugal.Equipa WHERE nome = @nome AND ID <> @ID_equipa)
         BEGIN
             RAISERROR ('Erro: Já existe outra equipa com esse nome.', 16, 1);
+            ROLLBACK TRANSACTION;
             RETURN;
         END
 
@@ -759,9 +763,15 @@ BEGIN
             ano_fundacao = @ano_fundacao
         WHERE ID = @ID_equipa;
 
+        UPDATE Volta_Portugal.Categoria_Equipa
+        SET categoria = @categoria
+        WHERE ID_equipa = @ID_equipa;
+
+        COMMIT TRANSACTION;
         PRINT 'Equipa atualizada com sucesso.';
     END TRY
     BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
         THROW;
     END CATCH
 END;
