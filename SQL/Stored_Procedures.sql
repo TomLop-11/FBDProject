@@ -532,11 +532,22 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT P.UCI_ID, P.nome, P.nacionalidade, P.data_nascimento, C.num_dorsal
+    SELECT 
+        P.UCI_ID,           
+        P.nome,             
+        P.nacionalidade,    
+        P.data_nascimento,  
+        C.num_dorsal,       
+        CC.categoria,       
+        E.nome AS nome_equipa 
     FROM Volta_Portugal.Pessoa P
     JOIN Volta_Portugal.Ciclista C ON P.UCI_ID = C.UCI_ID
+    LEFT JOIN Volta_Portugal.Categoria_Ciclista CC ON C.UCI_ID = CC.UCI_ID_ciclista
+    LEFT JOIN Volta_Portugal.Pertence Per ON C.UCI_ID = Per.UCI_ID_Ciclista AND Per.data_fim IS NULL
+    LEFT JOIN Volta_Portugal.Equipa E ON Per.ID_equipa = E.ID
     WHERE (@UCI_ID IS NULL OR P.UCI_ID = @UCI_ID)
-      AND (@nome IS NULL OR P.nome LIKE '%' + @nome + '%');
+      AND (@nome IS NULL OR P.nome LIKE '%' + @nome + '%')
+    ORDER BY P.UCI_ID ASC;
 END;
 GO
 
@@ -774,5 +785,40 @@ BEGIN
         IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
         THROW;
     END CATCH
+END;
+GO
+
+-- 27) Obter Plantel
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_ObterPlantelEquipa
+    @ID_equipa INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        P.UCI_ID, 
+        C.num_dorsal, 
+        P.nome, 
+        P.nacionalidade, 
+        CC.categoria, 
+        P.data_nascimento
+    FROM Volta_Portugal.Pessoa P 
+    JOIN Volta_Portugal.Ciclista C ON P.UCI_ID = C.UCI_ID
+    JOIN Volta_Portugal.Pertence Per ON C.UCI_ID = Per.UCI_ID_Ciclista
+    LEFT JOIN Volta_Portugal.Categoria_Ciclista CC ON C.UCI_ID = CC.UCI_ID_ciclista
+    WHERE Per.ID_equipa = @ID_equipa 
+END;
+GO
+
+-- 28) Obter Diretor
+CREATE OR ALTER PROCEDURE Volta_Portugal.sp_ObterDiretorEquipa
+    @ID_equipa INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT UCI_ID_DiretorDesportivo 
+    FROM Volta_Portugal.Orienta 
+    WHERE ID_equipa = @ID_equipa 
 END;
 GO
