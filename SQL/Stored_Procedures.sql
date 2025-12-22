@@ -673,7 +673,8 @@ CREATE OR ALTER PROCEDURE Volta_Portugal.sp_EditarCiclista
     @nome VARCHAR(64),
     @nacionalidade VARCHAR(64),
     @data_nascimento DATE,
-    @num_dorsal INT
+    @num_dorsal INT,
+    @categoria VARCHAR(64)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -693,8 +694,12 @@ BEGIN
         SET num_dorsal = @num_dorsal
         WHERE UCI_ID = @UCI_ID;
 
+        UPDATE Volta_Portugal.Categoria_Ciclista
+        SET categoria = @categoria
+        WHERE UCI_ID_ciclista = @UCI_ID;
+
         COMMIT TRANSACTION;
-        SELECT @NovoID AS ID;
+        SELECT @UCI_ID AS ID;
         PRINT 'Ciclista atualizado com sucesso.';
     END TRY
     BEGIN CATCH
