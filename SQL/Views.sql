@@ -77,4 +77,18 @@ SELECT DISTINCT modelo
 FROM Volta_Portugal.Bicicleta;
 GO
 
+-- 7) View para patrocinadores
+CREATE OR ALTER VIEW Volta_Portugal.vw_ListaPatrocinadoresCompeticao
+AS
+SELECT 
+    C.nome AS Nome_Competicao,
+    P.nome AS Nome_Patrocinador,
+    P.contacto AS Contacto,
+    EP.data_inicio AS Inicio_Patrocinio,
+    EP.data_fim AS Fim_Patrocinio
+FROM Volta_Portugal.Competicao C
+INNER JOIN Volta_Portugal.E_Patrocinado EP ON C.ID = EP.ID_competicao
+INNER JOIN Volta_Portugal.Patrocinador P ON EP.Nome_patrocinador = P.nome;
+GO
+
 
